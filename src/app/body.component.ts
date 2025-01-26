@@ -37,7 +37,7 @@ import { Gallery } from './gallery.component';
     <testimonials class="section" />
     <contact class="section" />
   `,
-  styleUrl: './css/app.component.css',
+  styleUrl: '../../css-dist/app.component.min.css',
 })
 export class BodyComponent {
 

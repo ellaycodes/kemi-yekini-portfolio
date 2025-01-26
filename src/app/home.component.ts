@@ -8,7 +8,7 @@ import { CommonModule, NgIf } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './html/home.component.html',
-  styleUrl: './css/home.component.css',
+  styleUrl: '../../css-dist/home.component.min.css',
 })
 export class Home implements OnInit {
   @Input() action!: (imageUrl: string, format?: string) => string;

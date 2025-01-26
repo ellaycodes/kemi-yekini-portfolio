@@ -8,7 +8,7 @@ import { CommonModule } from "@angular/common";
     standalone: true,
     imports: [CommonModule],
     templateUrl: './html/testimonials.component.html',
-    styleUrls: ['./css/app.component.css', './css/testimonials.component.css']
+    styleUrls: ['../../css-dist/app.component.min.css', '../../css-dist/testimonials.component.min.css']
 })
 
 export class Testimonials implements OnInit{

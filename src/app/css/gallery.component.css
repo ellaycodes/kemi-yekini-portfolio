@@ -145,10 +145,6 @@ img.expanded {
   transition: all 0.3s ease;
 }
 
-.description-container {
-  /* display: none; */
-}
-
 .description-container.expanded {
   display: flex;
 }

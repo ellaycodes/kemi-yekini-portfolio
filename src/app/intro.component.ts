@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './html/intro.component.html',
-  styleUrls: ['./css/app.component.css', './css/intro.component.css'],
+  styleUrls: ['../../css-dist/app.component.min.css', '../../css-dist/intro.component.min.css'],
 })
 export class Intro implements OnInit {
   @Input() action!: (imageUrl: string, format?: string) => string;

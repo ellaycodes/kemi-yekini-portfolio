@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './html/work.component.html',
-  styleUrls: ['./css/app.component.css', './css/work.component.css'],
+  styleUrls: ['../../css-dist/app.component.min.css', '../../css-dist/work.component.min.css'],
 })
 export class Work implements OnInit {
   constructor(private contentfulService: ContentfulService) {}

@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
     standalone: true,
     imports: [CommonModule],
     templateUrl: './html/accolades.component.html',
-    styleUrls: ['./css/app.component.css', './css/accolades.component.css']
+    styleUrls: ['../../css-dist/app.component.min.css', '../../css-dist/accolades.component.min.css']
 })
 export class Accolades implements OnInit {
   constructor(private contentfulService: ContentfulService) {}

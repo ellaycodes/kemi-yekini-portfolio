@@ -10,7 +10,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './html/gallery.component.html',
-  styleUrls: ['./css/app.component.css', './css/gallery.component.css'],
+  styleUrls: ['../../css-dist/app.component.min.css', '../../css-dist/gallery.component.min.css'],
 })
 export class Gallery implements OnInit {
   gallery$: Observable<any> | undefined;
