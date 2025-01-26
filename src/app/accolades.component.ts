@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ContentfulService } from './contentful.service';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -12,6 +12,8 @@ import { CommonModule } from '@angular/common';
 })
 export class Accolades implements OnInit {
   constructor(private contentfulService: ContentfulService) {}
+
+  @Input() action!: (imageUrl: string, format?: string) => string;
 
   accolades$: Observable<any> | undefined;
   backgroundColor: string = '';

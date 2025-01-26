@@ -6,7 +6,7 @@
             </div>
             <section class="article-cards">
                 <div class="article" *ngFor="let articleCard of article.fields.articleCards">
-                    <img [src]="articleCard.fields.image.fields.file.url" />
+                    <img [src]="action(articleCard.fields.image.fields.file.url)" loading="lazy"/>
                     <h2 class="title">{{articleCard.fields.title}}</h2>
                     <div class="source">
                         <p>{{articleCard.fields.publicationName}}</p>

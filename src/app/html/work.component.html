@@ -8,7 +8,7 @@
                     <h2 class="job-title">{{workCard.fields.jobTitle}}</h2>
                 </div>
                 <div class="company-details">
-                    <img class="company-logo" [src]="workCard.fields.logo.fields.file.url">
+                    <img class="company-logo" [src]="action(workCard.fields.logo.fields.file.url)" loading="lazy">
                     <p class="company-name">{{workCard.fields.company}}</p>
                 </div>
             </div>

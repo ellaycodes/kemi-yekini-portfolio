@@ -1,7 +1,7 @@
 <div class="bio body" *ngIf="bio$ | async as bio" [style.--bg-color]="backgroundColor">
     <div class="container">
         <section class="img">
-            <img [src]="bio.items[0].fields.mainImage.fields.file.url" />
+            <img [src]="action(bio.items[0].fields.mainImage.fields.file.url)" loading="lazy"/>
         </section>
         <section class="text">
             <div class="divider"  *ngFor="let each of bio.items[0].fields.bio">

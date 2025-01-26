@@ -41,7 +41,6 @@ img {
     flex-wrap: wrap;
     border-top: 2px solid #fff;
     margin-bottom: 5vh;
-    gap: 2vw;
 }
 
 .divider_title {
@@ -51,6 +50,7 @@ img {
 .divider_content {
     width: 70%;
     text-align: left;
+    font-size: 0.7em;
 }
 
 @media screen and (max-width: 1440px) {

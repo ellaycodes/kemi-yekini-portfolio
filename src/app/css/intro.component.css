@@ -1,6 +1,5 @@
 .bookmark-container {
   --bm-width: 200px;
-  margin-top: 5vh;
 }
 
 .intro {
@@ -47,7 +46,6 @@
   display: flex;
   flex-direction: column;
   padding: clamp(60px, 20vh, 100px) 2vw 10vh;
-  /* margin-top: 7vh; */
   border-radius: 0 0 5px 0;
   box-shadow: 1px 3px 5px #ababab;
   backdrop-filter: blur(15px);
@@ -59,13 +57,13 @@
 }
 
 .bookmark-toggle {
-  background-color: var(--bm-bg-color, #f0f0f0);
+  background-color: var(--bm-bg-color, #303030);
   color: #fff;
   padding: 10px 10px 0; 
   border: none;
   cursor: pointer;
   position: absolute;
-  border-radius: 0 20px 20px 0px;
+  border-radius: 0 0 20px 0px;
   left: 0;
   width: 11vw;
   min-width: auto;

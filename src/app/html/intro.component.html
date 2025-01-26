@@ -17,7 +17,7 @@
             </div>
         </section>
         <section class="intro_portrait">
-            <img loading="eager" [src]="intro.items[0].fields.image.fields.file.url" />
+            <img loading="lazy" [src]="action(intro.items[0].fields.image.fields.file.url)" />
             <p>{{intro.items[0].fields.caption}}</p>
         </section>
     </div>

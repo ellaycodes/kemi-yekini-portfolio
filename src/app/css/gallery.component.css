@@ -84,6 +84,7 @@ button:hover {
   opacity: 0;
   transition: opacity 0.5s ease-in-out;
   cursor: pointer;
+  justify-content: center;
 }
 
 .card:not([hidden]) {
@@ -91,10 +92,9 @@ button:hover {
 }
 
 .card-container {
-  width: 25vw;
+  width: 100%;
   height: auto;
   border-radius: 5px;
-  /* box-shadow: 2px 2px 5px #878787; */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
