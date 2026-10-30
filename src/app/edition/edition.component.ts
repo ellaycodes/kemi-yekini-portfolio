@@ -15,9 +15,13 @@ import {
   signal,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { ContentfulService } from '../contentful.service';
 import { CiteStyle, FormattedCitation, formatCitation } from './cite';
 import {
   ABOUT_STATS,
+  Award,
+  FALLBACK_AWARDS,
+  TALKS,
   BANDS,
   HERO_STATS,
   MOMENTS,
@@ -47,6 +51,18 @@ interface ModalView {
 type Open = { kind: 'pub' | 'story'; index: number } | null;
 
 const H_INDEX_KEY = makeStateKey<number>('edition-h-index');
+const AWARDS_KEY = makeStateKey<Award[]>('edition-awards');
+
+/** Joins the text of a Contentful rich-text field. */
+function richText(doc: any): string {
+  return (doc?.content ?? [])
+    .map((block: any) => (block?.content ?? []).map((n: any) => n?.value ?? '').join(''))
+    .filter((t: string) => t.trim())
+    .join(' ')
+    .trim();
+}
+
+type SendState = 'idle' | 'sending' | 'sent' | 'error';
 
 @Component({
   selector: 'edition',
@@ -54,6 +70,7 @@ const H_INDEX_KEY = makeStateKey<number>('edition-h-index');
   templateUrl: './edition.component.html',
 })
 export class Edition implements OnInit, OnDestroy {
+  private contentful = inject(ContentfulService);
   private transferState = inject(TransferState);
   private pendingTasks = inject(PendingTasks);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -65,6 +82,7 @@ export class Edition implements OnInit, OnDestroy {
   readonly columns = RESEARCH_COLUMNS;
   readonly bands = BANDS;
   readonly lead = STORIES[0];
+  readonly talks = TALKS;
   readonly moments = MOMENTS;
   readonly links = PROFILE_LINKS;
   readonly tiles = TILES;
@@ -91,6 +109,16 @@ export class Edition implements OnInit, OnDestroy {
       };
     });
   });
+
+  /**
+   * Awards from the old Contentful entry, fetched once at build time and baked into
+   * the page (no runtime request). Temporary until the list is confirmed and hard-coded.
+   */
+  readonly awards = signal<Award[]>(this.transferState.get(AWARDS_KEY, FALLBACK_AWARDS));
+
+  /** "Invite Kemi to speak" form, submitted to Netlify Forms. */
+  readonly speakOpen = signal(false);
+  readonly sendState = signal<SendState>('idle');
 
   readonly citeStyle = signal<CiteStyle>('apa');
   readonly copied = signal(false);
@@ -144,6 +172,7 @@ export class Edition implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadHIndex();
+    this.loadAwards();
   }
 
   /** Baked in at build time, then refreshed in the browser so it stays current. */
@@ -165,6 +194,25 @@ export class Edition implements OnInit, OnDestroy {
       clearTimeout(timer);
       done();
     }
+  }
+
+  /** Server/prerender only: the browser reuses what the build baked in. */
+  private loadAwards(): void {
+    if (this.isBrowser || this.transferState.hasKey(AWARDS_KEY)) return;
+    const done = this.pendingTasks.add();
+    this.contentful.getEntriesByContentType('accoladesPage').subscribe({
+      next: (data: any) => {
+        const fromCms: Award[] = (data?.items?.[0]?.fields?.accolades ?? [])
+          .map((a: any) => ({ title: a?.fields?.title ?? '', detail: richText(a?.fields?.description) }))
+          .filter((a: Award) => a.title);
+        const hasSwan = fromCms.some((a) => /SWAN|Best Female/i.test(a.title + a.detail));
+        const awards = hasSwan ? fromCms : [...fromCms, ...FALLBACK_AWARDS];
+        this.awards.set(awards);
+        this.transferState.set(AWARDS_KEY, awards);
+        done();
+      },
+      error: () => done(),
+    });
   }
 
   ngOnDestroy(): void {
@@ -276,6 +324,40 @@ export class Edition implements OnInit, OnDestroy {
     }
   }
 
+  openSpeak(): void {
+    if (this.isBrowser) {
+      this.lastFocus = document.activeElement as HTMLElement | null;
+      document.body.style.overflow = 'hidden';
+    }
+    this.sendState.set('idle');
+    this.speakOpen.set(true);
+    setTimeout(() => this.closeButton?.nativeElement.focus());
+  }
+
+  /** Posts to the static skeleton file, as Netlify requires for SSR sites. */
+  async sendInvite(event: Event): Promise<void> {
+    event.preventDefault();
+    const form = event.target as HTMLFormElement;
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    this.sendState.set('sending');
+    try {
+      const body = new URLSearchParams(new FormData(form) as any).toString();
+      const res = await fetch('/__forms.html', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body,
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      this.sendState.set('sent');
+      form.reset();
+    } catch {
+      this.sendState.set('error');
+    }
+  }
+
   openPub(index: number): void {
     this.show({ kind: 'pub', index });
   }
@@ -296,8 +378,9 @@ export class Edition implements OnInit, OnDestroy {
 
   @HostListener('document:keydown.escape')
   close(): void {
-    if (!this.open()) return;
+    if (!this.open() && !this.speakOpen()) return;
     this.open.set(null);
+    this.speakOpen.set(false);
     if (this.isBrowser) {
       document.body.style.overflow = '';
       this.lastFocus?.focus();
