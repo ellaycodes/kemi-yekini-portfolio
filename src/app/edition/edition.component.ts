@@ -20,7 +20,10 @@ import { CiteStyle, FormattedCitation, formatCitation } from './cite';
 import {
   ABOUT_STATS,
   Award,
-  PLACES,
+  ATLAS_GROUPS,
+  PLACE_XY,
+  ROUTES,
+  TWINKLES,
   WIRE_ITEMS,
   FALLBACK_AWARDS,
   TALKS,
@@ -86,32 +89,34 @@ export class Edition implements OnInit, OnDestroy {
   readonly bands = BANDS;
   readonly lead = STORIES[0];
   readonly talks = TALKS;
-  readonly places = PLACES;
-  readonly home = PLACES[0];
-  readonly destinations = PLACES.slice(1).map((p, i) => ({
-    ...p,
-    /** Curved arc from Birmingham, lifted in the middle like a flight path. */
-    arc: (() => {
-      const h = PLACES[0];
-      const mx = (h.x + p.x) / 2;
-      const my = (h.y + p.y) / 2 - Math.min(90, Math.hypot(p.x - h.x, p.y - h.y) * 0.28);
-      return `M${h.x} ${h.y} Q${mx.toFixed(1)} ${my.toFixed(1)} ${p.x} ${p.y}`;
-    })(),
-    delay: `${i * 2.2}s`,
-  }));
+  /** Atlas: every place on the map, routes with travelling light, and twinkling city lights. */
+  readonly atlasGroups = ATLAS_GROUPS;
+  readonly atlasPoints = Object.entries(PLACE_XY).map(([name, [x, y]]) => ({ name, x, y, home: name === 'Birmingham' }));
+  readonly twinkles = TWINKLES;
+  readonly routes = ROUTES.map(([from, to], i) => {
+    const [x1, y1] = PLACE_XY[from];
+    const [x2, y2] = PLACE_XY[to];
+    const lift = Math.min(110, Math.hypot(x2 - x1, y2 - y1) * 0.3);
+    const d = `M${x1} ${y1} Q${((x1 + x2) / 2).toFixed(1)} ${((y1 + y2) / 2 - lift).toFixed(1)} ${x2} ${y2}`;
+    return { key: `${from}-${to}`, d, delay: `${(i * 1.37) % 9}s`, dur: `${6 + (i % 4) * 1.5}s` };
+  });
+  readonly atlasCounts = (() => {
+    const countries = new Set(['UK', 'Nigeria', 'South Africa', 'USA', 'Australia']);
+    return `${Object.keys(PLACE_XY).length} places · ${countries.size} countries · 4 continents`;
+  })();
 
-  /** Live dateline, like a newspaper edition line. Ticks every 30 seconds in the browser. */
+  /** Live dateline, like a newspaper edition line. Ticks every second in the browser. */
   private now = signal(new Date());
   readonly dateline = computed(() => {
     const d = this.now();
     const date = d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/London' });
-    const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' });
+    const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Europe/London' });
     return `${date} · ${time} in Birmingham`;
   });
   readonly datelineShort = computed(() => {
     const d = this.now();
     const date = d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Europe/London' });
-    const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' });
+    const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Europe/London' });
     return `${date} · ${time} Birmingham`;
   });
 
@@ -128,8 +133,15 @@ export class Edition implements OnInit, OnDestroy {
     return WIRE_ITEMS.map((t) => (t === '{hIndex}' ? `h-index ${h}, refreshed from OpenAlex` : t));
   });
 
-  /** The newest paper gets a "New" tag while it is less than about a year old. */
-  readonly newestIsRecent = Number(PUBLICATIONS[0].year) >= new Date().getFullYear() - 1;
+  /**
+   * Cards show a paper's year only while it is under 10 months old, so the front of
+   * the site never looks dated. The year stays in the summary pop-up and citation.
+   */
+  readonly cardYears = PUBLICATIONS.map((p) => {
+    const published = new Date(p.published ?? `${p.year}-12-31`);
+    const tenMonths = 10 * 30.44 * 24 * 60 * 60 * 1000;
+    return Number.isNaN(published.getTime()) || Date.now() - published.getTime() > tenMonths ? '' : p.year;
+  });
   readonly moments = MOMENTS;
   readonly links = PROFILE_LINKS;
   readonly tiles = TILES;
@@ -152,6 +164,7 @@ export class Edition implements OnInit, OnDestroy {
       const target = s.live === 'hIndex' && h ? h : s.value;
       return {
         label: s.label,
+        live: !!s.live,
         value: Math.round(target * eased).toLocaleString('en-GB') + (s.suffix ?? ''),
       };
     });
@@ -327,7 +340,7 @@ export class Edition implements OnInit, OnDestroy {
 
   /** Clock, reading progress and the cursor light on cards. Quiet, and always real. */
   private startAmbient(): void {
-    const clock = window.setInterval(() => this.now.set(new Date()), 30000);
+    const clock = window.setInterval(() => this.now.set(new Date()), 1000);
     this.now.set(new Date());
 
     const root = this.rootRef?.nativeElement;
@@ -345,7 +358,7 @@ export class Edition implements OnInit, OnDestroy {
       }
     };
     const onPointer = (e: PointerEvent) => {
-      const card = (e.target as HTMLElement | null)?.closest<HTMLElement>('.ed-cover, .ed-tile');
+      const card = (e.target as HTMLElement | null)?.closest<HTMLElement>('[data-glow]');
       if (!card) return;
       const r = card.getBoundingClientRect();
       card.style.setProperty('--mx', `${e.clientX - r.left}px`);
