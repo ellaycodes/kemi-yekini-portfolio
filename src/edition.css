@@ -249,6 +249,11 @@ body {
   height: 100%;
   object-fit: cover;
   object-position: 44% 22%;
+  animation: ed-fade-in 0.6s ease-out both;
+}
+
+@keyframes ed-fade-in {
+  from { opacity: 0; }
 }
 
 .ed-statement {
@@ -884,18 +889,6 @@ body {
   from { transform: scale(1.28); }
   to { transform: scale(1); }
 }
-@keyframes ed-recede {
-  to { transform: scale(0.74) translateY(4%); opacity: 0.3; }
-}
-@keyframes ed-turn {
-  to { transform: rotate(120deg); }
-}
-@keyframes ed-lift {
-  to { transform: translateY(-48px); opacity: 0; }
-}
-@keyframes ed-arrive {
-  from { opacity: 0; transform: scale(0.6); }
-}
 
 @media (prefers-reduced-motion: no-preference) {
   .ed-cue svg { animation: ed-bob 1.8s ease-in-out infinite; }
@@ -915,22 +908,73 @@ body {
     .ed-zoom img { animation: ed-zoomout linear both; animation-timeline: --ed-zoom; animation-range: cover 0% cover 100%; }
   }
 
-  @media (prefers-reduced-motion: no-preference) and (min-width: 901px) {
-    .ed-stage { view-timeline: --ed-hero block; }
-    .ed-pin { position: sticky; top: 0; height: min(100vh, 900px); min-height: 0; }
-    .ed-statement { height: 800px; box-sizing: border-box; }
-    .ed-figwrap { animation: ed-recede linear both; animation-timeline: --ed-hero; animation-range: contain 0% contain 100%; }
-    .ed-orbit { animation: ed-turn linear both; animation-timeline: --ed-hero; animation-range: contain 0% contain 100%; }
-    .ed-herocopy, .ed-masthead { animation: ed-lift linear both; animation-timeline: --ed-hero; animation-range: contain 0% contain 30%; }
-    .ed-statement-inner { animation: ed-arrive linear both; animation-timeline: --ed-hero; animation-range: contain 15% contain 95%; }
+}
+
+/* Pinned cover, driven by --p (0 → 1) which the component writes on scroll.
+   Only active once the script adds .is-live, so no-JS and reduced motion get
+   the static page. Works on phones, where the cover sticks by its bottom edge. */
+.ed-stage.is-live .ed-pin {
+  position: sticky;
+}
+
+.ed-stage.is-live .ed-statement {
+  height: clamp(560px, 90vh, 800px);
+  box-sizing: border-box;
+}
+
+.ed-stage.is-live .ed-figwrap {
+  transform: translateY(calc(4% * var(--p, 0))) scale(calc(1 - 0.26 * var(--p, 0)));
+  opacity: calc(1 - 0.7 * var(--p, 0));
+  will-change: transform, opacity;
+}
+
+.ed-stage.is-live .ed-orbit {
+  transform: rotate(calc(120deg * var(--p, 0)));
+}
+
+.ed-stage.is-live .ed-herocopy,
+.ed-stage.is-live .ed-masthead {
+  --ed-lift: min(1, calc(var(--p, 0) / 0.3));
+  transform: translateY(calc(-48px * var(--ed-lift)));
+  opacity: calc(1 - var(--ed-lift));
+}
+
+.ed-stage.is-live .ed-statement-inner {
+  --ed-arrive: clamp(0, calc((var(--p, 0) - 0.15) / 0.8), 1);
+  transform: scale(calc(0.6 + 0.4 * var(--ed-arrive)));
+  opacity: var(--ed-arrive);
+}
+
+@media (min-width: 901px) {
+  .ed-stage.is-live .ed-pin {
+    height: min(100vh, 900px);
+    min-height: 0;
   }
 }
+
+/* Reveal-on-scroll for browsers without scroll-driven animations (older iOS). */
+.ed-io .ed-rise,
+.ed-io .ed-pop,
+.ed-io .ed-slide,
+.ed-io .ed-cover {
+  opacity: 0;
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.ed-io .ed-rise { transform: translateY(48px); }
+.ed-io .ed-pop { transform: scale(0.8); }
+.ed-io .ed-slide { transform: translateX(48px); }
+.ed-io .ed-cover { transform: translateY(80px) scale(0.92); }
+.ed-io .is-in { opacity: 1; transform: none; }
+.ed-io .ed-cover.is-in:hover { transform: translateY(-4px); }
 
 /* ---------- Small screens ---------- */
 
 @media (max-width: 900px) {
   .ed-pin { min-height: 0; }
-  .ed-herogrid { grid-template-columns: 1fr; padding-bottom: 48px; }
+  .ed-herogrid { grid-template-columns: 1fr; gap: 32px; padding-top: 32px; padding-bottom: 24px; }
+  .ed-herostats { margin-top: 32px; }
+  .ed .ed-cue { margin-top: 24px; }
+  .ed-figwrap { width: min(100%, 360px); }
   .ed-herostats { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 24px; }
   .ed-herostats > div:nth-child(3) { border-left: 0; padding-left: 0; }
   .ed-masthead-title { order: -1; width: 100%; }
