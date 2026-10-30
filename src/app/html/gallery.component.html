@@ -16,8 +16,8 @@
                                 [ngClass]="{'expanded': allCardsExpanded}" loading="lazy">
                         </div>
                         <div class="description-container" [ngClass]="{'expanded': allCardsExpanded}">
-                            <p class="description" [innerHTML]="transformMarkdownToHTML(imageCard.fields.imageSummary)">
-                            </p>
+                            <div class="description" [innerHTML]="transformMarkdownToHTML(imageCard.fields.imageSummary)">
+                            </div>
                         </div>
                     </div>
                 </div>
