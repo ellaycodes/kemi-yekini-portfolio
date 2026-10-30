@@ -1,4 +1,5 @@
 <div #root id="top" class="ed">
+  <div class="ed-progress" aria-hidden="true"></div>
 
   <!-- Cover: pinned hero, then the statement rises over it -->
   <div #stage class="ed-stage">
@@ -7,7 +8,21 @@
         <div class="ed-masthead-bar">
           <span>Aston Business School</span>
           <span class="ed-serif ed-masthead-title">A portfolio of research &amp; practice</span>
-          <span>Birmingham · 2026</span>
+          <span class="ed-dateline"><span class="ed-dl-long">{{ dateline() }}</span><span class="ed-dl-short">{{ datelineShort() }}</span></span>
+        </div>
+        <div class="ed-wire" aria-label="Latest">
+          <span class="ed-wire-label"><span class="ed-live-dot" aria-hidden="true"></span>Latest</span>
+          <div class="ed-wire-window">
+            <div class="ed-wire-track">
+              @for (copy of [0, 1]; track copy) {
+                <span class="ed-wire-run" [attr.aria-hidden]="copy === 1 ? 'true' : null">
+                  @for (item of wire(); track item) {
+                    <span class="ed-wire-item">{{ item }}</span>
+                  }
+                </span>
+              }
+            </div>
+          </div>
         </div>
       </div>
 
@@ -21,7 +36,12 @@
             @for (s of heroStats(); track s.label) {
               <div>
                 <p class="ed-serif ed-herostat-value">{{ s.value }}</p>
-                <p class="ed-herostat-label">{{ s.label }}</p>
+                <p class="ed-herostat-label">
+                  {{ s.label }}
+                  @if (s.live) {
+                    <span class="ed-live" title="Updates itself from OpenAlex"><span class="ed-live-dot" aria-hidden="true"></span>Live</span>
+                  }
+                </p>
               </div>
             }
           </div>
@@ -80,7 +100,7 @@
     </div>
     <div class="ed-stats">
       @for (s of aboutStats; track s.label) {
-        <div class="ed-pop ed-stat">
+        <div class="ed-pop ed-stat" data-glow>
           <p class="ed-serif ed-stat-value">{{ s.value }}</p>
           <p class="ed-stat-label">{{ s.label }}</p>
         </div>
@@ -94,7 +114,7 @@
     <h2 class="ed-serif ed-h2 ed-rise ed-h2-gap">Three decades, in order</h2>
     <div class="ed-path">
       @for (p of path; track p.title) {
-        <div class="ed-pathrow ed-slide">
+        <div class="ed-pathrow ed-slide" data-glow>
           <p class="ed-serif ed-path-year">{{ p.year }}</p>
           <p class="ed-serif ed-path-title">{{ p.title }}</p>
           <p class="ed-path-detail">{{ p.detail }}</p>
@@ -110,7 +130,7 @@
         <div class="ed-secthead"><span>Interlude</span><span>In their words</span></div>
         <div class="ed-quote-grid" [class.ed-quote-single]="quotes().length === 1">
           @for (q of quotes(); track q.name; let first = $first) {
-            <figure class="ed-quote ed-rise" [class.ed-quote-lead]="first">
+            <figure class="ed-quote ed-rise" [class.ed-quote-lead]="first" data-glow>
               <span class="ed-serif ed-quote-mark" aria-hidden="true">“</span>
               <blockquote class="ed-serif">{{ q.text }}</blockquote>
               <figcaption>
@@ -135,12 +155,17 @@
       <p class="ed-swipe" aria-hidden="true">Swipe for all {{ pubs.length }} papers <svg class="ed-ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></p>
       <div class="ed-covers">
         @for (pub of pubs; track pub.title; let i = $index) {
-          <button type="button" class="ed-cover" [class.ed-feature]="pub.feature" [style.background]="pub.bg" (click)="openPub(i)">
-            <span class="ed-cover-venue">{{ pub.venue }}</span>
+          <button type="button" class="ed-cover" [class.ed-feature]="pub.feature" [style.background-color]="pub.bg" data-glow (click)="openPub(i)">
+            <span class="ed-cover-venue">
+              @if (i === 0) {
+                <span class="ed-new">Latest</span>
+              }
+              {{ pub.venue }}
+            </span>
             <span class="ed-serif ed-cover-title">{{ pub.title }}</span>
             <span class="ed-cover-foot">
-              <span>{{ pub.kind }} · {{ pub.year }}</span>
-              <span class="ed-accent ed-strong">Read summary +</span>
+              <span>{{ pub.kind }}@if (cardYears[i]) { · {{ cardYears[i] }}}</span>
+              <span class="ed-accent ed-strong ed-draw">Read summary +</span>
             </span>
           </button>
         }
@@ -154,7 +179,7 @@
     <h2 class="ed-serif ed-h2 ed-rise ed-h2-gap">Research &amp; service</h2>
     <div class="ed-cols3">
       @for (c of columns; track c.heading) {
-        <div class="ed-rise">
+        <div class="ed-rise" data-glow>
           <p class="ed-label">{{ c.heading }}</p>
           <ul class="ed-list">
             @for (item of c.items; track item) {
@@ -166,7 +191,7 @@
     </div>
     <div class="ed-bands">
       @for (b of bands; track b.label) {
-        <div class="ed-bandrow ed-slide">
+        <div class="ed-bandrow ed-slide" data-glow>
           <p class="ed-label">{{ b.label }}</p>
           <p class="ed-bandtext">{{ b.text }}</p>
           @if (b.href) {
@@ -185,6 +210,48 @@
     </div>
   </section>
 
+  <!-- Atlas: where the work has travelled -->
+  <section class="ed-atlas" aria-label="Where the work has travelled">
+    <div class="ed-section ed-atlas-head">
+      <div class="ed-secthead"><span>Atlas</span><span>Where the work has travelled</span></div>
+      <div class="ed-atlas-intro">
+        <h2 class="ed-serif ed-h2 ed-rise">A career across four continents</h2>
+        <p class="ed-atlas-count ed-rise">{{ atlasCounts }}</p>
+      </div>
+    </div>
+    <div class="ed-map" aria-hidden="true">
+      <img class="ed-map-dots" src="/assets/world-dots.svg" alt="" width="1000" height="372" loading="lazy" />
+      <svg class="ed-map-layer" viewBox="0 0 1000 372">
+        @for (t of twinkles; track $index) {
+          <circle class="ed-twinkle" [attr.cx]="t.x" [attr.cy]="t.y" r="1.6" [style.animation-delay]="t.d + 's'" [style.animation-duration]="t.t + 's'" />
+        }
+        @for (r of routes; track r.key) {
+          <path class="ed-route" [attr.d]="r.d" />
+          <path class="ed-route-light" [attr.d]="r.d" pathLength="1" [style.animation-delay]="r.delay" [style.animation-duration]="r.dur" />
+        }
+        @for (pt of atlasPoints; track pt.name) {
+          @if (pt.home) {
+            <circle class="ed-home-ring" [attr.cx]="pt.x" [attr.cy]="pt.y" r="11" />
+          } @else {
+            <circle class="ed-pin-ring" [attr.cx]="pt.x" [attr.cy]="pt.y" r="7" [style.animation-delay]="($index * 0.9) + 's'" />
+          }
+          <circle class="ed-pin-core" [attr.cx]="pt.x" [attr.cy]="pt.y" [attr.r]="pt.home ? 4.4 : 2.8" />
+        }
+      </svg>
+    </div>
+    <div class="ed-section ed-atlas-foot">
+      <div class="ed-atlas-legend">
+        @for (g of atlasGroups; track g.label) {
+          <div class="ed-atlas-group ed-rise" data-glow>
+            <p class="ed-label ed-atlas-label">{{ g.label }}</p>
+            <p class="ed-serif ed-atlas-places">{{ g.places.join(' · ') }}</p>
+            <p class="ed-atlas-note">{{ g.note }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
   <!-- V · In the field -->
   <section class="ed-ruled">
     <div class="ed-section">
@@ -192,23 +259,23 @@
       <h2 class="ed-serif ed-h2 ed-rise ed-h2-gap">In the field</h2>
       <p class="ed-hint ed-rise">Select a photo to read the story behind it.</p>
       <div class="ed-field">
-        <button type="button" class="ed-reset ed-lead" (click)="openStory(0)">
+        <button type="button" class="ed-reset ed-lead" data-glow (click)="openStory(0)">
           <span class="ed-zoom">
             <img [src]="lead.img" [alt]="lead.title" [style.object-position]="lead.imgPosition" loading="lazy" />
           </span>
           <span class="ed-lead-foot">
             <span class="ed-muted">{{ lead.title }}</span>
-            <span class="ed-strong">Read the story +</span>
+            <span class="ed-strong ed-draw">Read the story +</span>
           </span>
         </button>
         <div>
           @for (m of moments; track m.img) {
-            <button type="button" class="ed-reset ed-moment ed-slide" (click)="openStory(m.story)">
+            <button type="button" class="ed-reset ed-moment ed-slide" data-glow (click)="openStory(m.story)">
               <img [src]="m.img" alt="" loading="lazy" />
               <span>
                 <span class="ed-serif ed-moment-title">{{ m.title }}</span>
                 <span class="ed-moment-place">{{ m.place }}</span>
-                <span class="ed-moment-cta">Read the story +</span>
+                <span class="ed-moment-cta"><span class="ed-draw">Read the story +</span></span>
               </span>
             </button>
           }
@@ -227,7 +294,7 @@
           <p class="ed-label">Awards</p>
           <ul class="ed-awards">
             @for (a of awards(); track a.title) {
-              <li>
+              <li data-glow>
                 <svg class="ed-laurel" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21c-4-2-7-6-7-11M12 21c4-2 7-6 7-11M6.5 13.5c-1.5-.3-2.6-1.2-3-2.5 1.4-.3 2.6.1 3.3 1M5.4 9.6C4 9 3.2 7.8 3.2 6.5c1.4.2 2.4 1 2.9 2M17.5 13.5c1.5-.3 2.6-1.2 3-2.5-1.4-.3-2.6.1-3.3 1M18.6 9.6c1.4-.6 2.2-1.8 2.2-3.1-1.4.2-2.4 1-2.9 2" /></svg>
                 <span>
                   <span class="ed-serif ed-award-title">{{ a.title }}</span>
@@ -243,7 +310,7 @@
           <p class="ed-label">Selected talks</p>
           <div class="ed-talks">
             @for (t of talks; track t.event) {
-              <div class="ed-talk">
+              <div class="ed-talk" data-glow>
                 <p class="ed-serif ed-talk-when">{{ t.when }}</p>
                 <div>
                   <p class="ed-serif ed-talk-event">{{ t.event }}</p>
@@ -254,7 +321,7 @@
           </div>
         </div>
       </div>
-      <div class="ed-speak-band ed-rise">
+      <div class="ed-speak-band ed-rise" data-glow>
         <div>
           <p class="ed-serif ed-speak-title">Invite Kemi to speak</p>
           <p class="ed-speak-text">Keynotes, guest lectures, panels and media. Send the details and she'll be in touch.</p>
@@ -272,7 +339,7 @@
       <p class="ed-serif ed-cta-deck ed-rise">Every paper, citation and profile, one click away. Each opens in a new tab, so this page stays right where you left it.</p>
       <div class="ed-tiles">
         @for (t of tiles; track t.label) {
-          <a class="ed-tile ed-rise" [class.ed-big]="t.big" [href]="t.href" target="_blank" rel="noopener">
+          <a class="ed-tile ed-rise" [class.ed-big]="t.big" [href]="t.href" target="_blank" rel="noopener" data-glow>
             <span class="ed-tile-label">{{ t.label }}</span>
             <span class="ed-tile-row">
               <span class="ed-serif ed-tile-title">{{ t.title }}</span>
@@ -281,7 +348,7 @@
           </a>
         }
       </div>
-      <button type="button" class="ed-reset ed-tile ed-tile-speak ed-rise" (click)="openSpeak()">
+      <button type="button" class="ed-reset ed-tile ed-tile-speak ed-rise" data-glow (click)="openSpeak()">
         <span class="ed-tile-label">Speaking &amp; media</span>
         <span class="ed-tile-row">
           <span class="ed-serif ed-tile-title">Invite Kemi to speak</span>
@@ -290,6 +357,7 @@
       </button>
       <div class="ed-colophon">
         <span>Professor Kemi C. Yekini · Aston Business School, Birmingham</span>
+        <span class="ed-updated">Last updated {{ lastUpdated }}</span>
         <a href="#top">Back to top <svg class="ed-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg></a>
       </div>
     </div>

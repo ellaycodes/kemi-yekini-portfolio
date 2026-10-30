@@ -20,6 +20,11 @@ import { CiteStyle, FormattedCitation, formatCitation } from './cite';
 import {
   ABOUT_STATS,
   Award,
+  ATLAS_GROUPS,
+  PLACE_XY,
+  ROUTES,
+  TWINKLES,
+  WIRE_ITEMS,
   FALLBACK_AWARDS,
   TALKS,
   BANDS,
@@ -52,6 +57,7 @@ type Open = { kind: 'pub' | 'story'; index: number } | null;
 
 const H_INDEX_KEY = makeStateKey<number>('edition-h-index');
 const AWARDS_KEY = makeStateKey<Award[]>('edition-awards');
+const BUILT_KEY = makeStateKey<string>('edition-built-at');
 
 /** Joins the text of a Contentful rich-text field. */
 function richText(doc: any): string {
@@ -83,6 +89,59 @@ export class Edition implements OnInit, OnDestroy {
   readonly bands = BANDS;
   readonly lead = STORIES[0];
   readonly talks = TALKS;
+  /** Atlas: every place on the map, routes with travelling light, and twinkling city lights. */
+  readonly atlasGroups = ATLAS_GROUPS;
+  readonly atlasPoints = Object.entries(PLACE_XY).map(([name, [x, y]]) => ({ name, x, y, home: name === 'Birmingham' }));
+  readonly twinkles = TWINKLES;
+  readonly routes = ROUTES.map(([from, to], i) => {
+    const [x1, y1] = PLACE_XY[from];
+    const [x2, y2] = PLACE_XY[to];
+    const lift = Math.min(110, Math.hypot(x2 - x1, y2 - y1) * 0.3);
+    const d = `M${x1} ${y1} Q${((x1 + x2) / 2).toFixed(1)} ${((y1 + y2) / 2 - lift).toFixed(1)} ${x2} ${y2}`;
+    return { key: `${from}-${to}`, d, delay: `${(i * 1.37) % 9}s`, dur: `${6 + (i % 4) * 1.5}s` };
+  });
+  readonly atlasCounts = (() => {
+    const countries = new Set(['UK', 'Nigeria', 'South Africa', 'USA', 'Australia']);
+    return `${Object.keys(PLACE_XY).length} places · ${countries.size} countries · 4 continents`;
+  })();
+
+  /** Live dateline, like a newspaper edition line. Ticks every second in the browser. */
+  private now = signal(new Date());
+  readonly dateline = computed(() => {
+    const d = this.now();
+    const date = d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/London' });
+    const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Europe/London' });
+    return `${date} · ${time} in Birmingham`;
+  });
+  readonly datelineShort = computed(() => {
+    const d = this.now();
+    const date = d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Europe/London' });
+    const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Europe/London' });
+    return `${date} · ${time} Birmingham`;
+  });
+
+  /** Stamped when the site is built, so it moves forward with every deploy. */
+  readonly lastUpdated = (() => {
+    const iso = this.transferState.get(BUILT_KEY, null) ?? new Date().toISOString();
+    if (!this.isBrowser) this.transferState.set(BUILT_KEY, iso);
+    return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/London' });
+  })();
+
+  /** Wire strip items, with the live h-index filled in. */
+  readonly wire = computed(() => {
+    const h = this.hIndex() ?? 13;
+    return WIRE_ITEMS.map((t) => (t === '{hIndex}' ? `h-index ${h}, refreshed from OpenAlex` : t));
+  });
+
+  /**
+   * Cards show a paper's year only while it is under 10 months old, so the front of
+   * the site never looks dated. The year stays in the summary pop-up and citation.
+   */
+  readonly cardYears = PUBLICATIONS.map((p) => {
+    const published = new Date(p.published ?? `${p.year}-12-31`);
+    const tenMonths = 10 * 30.44 * 24 * 60 * 60 * 1000;
+    return Number.isNaN(published.getTime()) || Date.now() - published.getTime() > tenMonths ? '' : p.year;
+  });
   readonly moments = MOMENTS;
   readonly links = PROFILE_LINKS;
   readonly tiles = TILES;
@@ -105,6 +164,7 @@ export class Edition implements OnInit, OnDestroy {
       const target = s.live === 'hIndex' && h ? h : s.value;
       return {
         label: s.label,
+        live: !!s.live,
         value: Math.round(target * eased).toLocaleString('en-GB') + (s.suffix ?? ''),
       };
     });
@@ -162,6 +222,7 @@ export class Edition implements OnInit, OnDestroy {
 
   constructor() {
     afterNextRender(() => {
+      this.startAmbient();
       const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
       if (reduce) return;
       this.startCountUp();
@@ -277,6 +338,42 @@ export class Edition implements OnInit, OnDestroy {
     measure();
   }
 
+  /** Clock, reading progress and the cursor light on cards. Quiet, and always real. */
+  private startAmbient(): void {
+    const clock = window.setInterval(() => this.now.set(new Date()), 1000);
+    this.now.set(new Date());
+
+    const root = this.rootRef?.nativeElement;
+    let queued = false;
+    const progress = () => {
+      queued = false;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const read = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      root?.style.setProperty('--read', read.toFixed(4));
+    };
+    const onScroll = () => {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(progress);
+      }
+    };
+    const onPointer = (e: PointerEvent) => {
+      const card = (e.target as HTMLElement | null)?.closest<HTMLElement>('[data-glow]');
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+      card.style.setProperty('--my', `${e.clientY - r.top}px`);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    root?.addEventListener('pointermove', onPointer, { passive: true });
+    progress();
+    this.teardown.push(() => {
+      window.clearInterval(clock);
+      window.removeEventListener('scroll', onScroll);
+      root?.removeEventListener('pointermove', onPointer);
+    });
+  }
+
   /** Browsers without CSS scroll-driven animations get reveal-on-scroll instead. */
   private startRevealFallback(): void {
     const root = this.rootRef?.nativeElement;
@@ -293,7 +390,7 @@ export class Edition implements OnInit, OnDestroy {
       },
       { rootMargin: '0px 0px -8% 0px' },
     );
-    root.querySelectorAll('.ed-rise, .ed-pop, .ed-slide, .ed-cover').forEach((el) => io.observe(el));
+    root.querySelectorAll('.ed-rise, .ed-pop, .ed-slide, .ed-cover, .ed-secthead').forEach((el) => io.observe(el));
     this.teardown.push(() => io.disconnect());
   }
 

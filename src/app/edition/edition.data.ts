@@ -38,6 +38,8 @@ export interface Publication {
   year: string;
   authors?: string;
   href?: string;
+  /** First published online (ISO date), when known. Used to hide old years on the cards. */
+  published?: string;
   cite?: Citation;
   body: string[];
 }
@@ -122,6 +124,7 @@ export const PUBLICATIONS: Publication[] = [
     bg: '#0e1b30',
     venue: 'Abacus · Wiley',
     title: 'Clarity and Conciseness of Financial Narrative Disclosures: Does the Practice Statement Matter?',
+    published: '2025-10-29',
     kind: 'Journal article',
     year: '2025',
     authors: 'Ekaete Efretuei and Kemi Yekini',
@@ -146,6 +149,7 @@ export const PUBLICATIONS: Publication[] = [
     bg: '#3a4658',
     venue: 'Business Ethics, the Environment & Responsibility',
     title: 'Socially Responsible Purchasing (SRP) in the Supply Chain Industry: Meanings and Influences',
+    published: '2024-01-05',
     kind: 'Journal article',
     year: '2025',
     authors: 'Titilayo Ogunyemi, Emmanuel Adegbite, Franklin Nakpodia, Kemi Yekini and Angela Ayios',
@@ -170,6 +174,7 @@ export const PUBLICATIONS: Publication[] = [
     bg: '#24385a',
     venue: 'J. of International Accounting, Auditing & Taxation',
     title: 'Diffusion theory, economic consequences, and adoption of international standards on auditing around the world',
+    published: '2024-08-13',
     kind: 'Journal article',
     year: '2024',
     authors: 'Ibrahim Elmghaamez, Collins G. Ntim and Kemi Yekini',
@@ -410,6 +415,47 @@ export const TALKS: Talk[] = [
   { when: 'February 2023', event: '8th International Academic Conference on Accounting and Finance, ICAN', place: 'Godfrey Okoye University, Enugu', role: 'Guest speaker' },
   { when: 'January 2020', event: 'UN ECA Expert Group Meeting, Economic Report on Africa 2020', place: 'Sandton, Johannesburg', role: 'Expert reviewer' },
   { when: 'August 2019', event: 'Academy of Management Annual Meeting', place: 'Boston', role: 'Presenter, CSR communication and semiotics' },
+];
+
+export interface Place {
+  name: string;
+  /** Position on assets/world-dots.svg (viewBox 0 0 1000 372, equirectangular, lat 78 to -56). */
+  x: number;
+  y: number;
+}
+
+export const PLACE_XY: Record<string, [number, number]> = {
+  Birmingham: [494.7, 70.8], London: [499.6, 73.5], Leicester: [496.9, 70.4], Nottingham: [496.8, 69.5],
+  Liverpool: [491.7, 68.3], Coventry: [495.8, 71], Southampton: [496.1, 75.2], Durham: [495.6, 64.5],
+  Oxford: [496.5, 72.9], Nigeria: [510.9, 197.2], Enugu: [520.9, 198.6], Johannesburg: [577.9, 289],
+  Boston: [302.6, 98.9], Sydney: [920, 310.6], Townsville: [907.8, 270],
+};
+
+/** Grouped for the legend. Every place here is drawn on the map. */
+export const ATLAS_GROUPS = [
+  { label: 'Career', places: ['Nigeria', 'Leicester', 'Nottingham', 'London', 'Birmingham'], note: 'From her BSc, KPMG and Deloitte in Nigeria to De Montfort, Nottingham, SOAS and Aston.' },
+  { label: 'Talks & reviews', places: ['London', 'Enugu', 'Johannesburg', 'Boston'], note: 'ICAN conferences, the UN Economic Report on Africa review and the Academy of Management.' },
+  { label: 'Co-authors & journals', places: ['Liverpool', 'Coventry', 'Southampton', 'Durham', 'Oxford', 'Sydney', 'Townsville'], note: 'Where her collaborators work, and Abacus at the University of Sydney.' },
+];
+
+/** Routes drawn on the map: from home to each place abroad, plus a few links between them. */
+export const ROUTES: [string, string][] = [
+  ['Birmingham', 'Boston'], ['Birmingham', 'Nigeria'], ['Birmingham', 'Enugu'], ['Birmingham', 'Johannesburg'],
+  ['Birmingham', 'Sydney'], ['Birmingham', 'Townsville'], ['London', 'Boston'], ['London', 'Johannesburg'],
+  ['Nigeria', 'Johannesburg'], ['Enugu', 'London'], ['London', 'Sydney'], ['Liverpool', 'Boston'],
+];
+
+/** Soft lights that twinkle across the land, sampled once from the dot grid. d = delay, t = duration (s). */
+export const TWINKLES: { x: number; y: number; d: number; t: number }[] = [{"x":169.4,"y":2.8,"d":4.54,"t":7.44},{"x":313.9,"y":280.4,"d":8.46,"t":5.98},{"x":491.7,"y":63.9,"d":6.37,"t":5.26},{"x":591.7,"y":47.2,"d":5.28,"t":5.75},{"x":719.4,"y":180.4,"d":2.98,"t":5.96},{"x":247.2,"y":119.4,"d":7.15,"t":8.39},{"x":786.1,"y":69.4,"d":1,"t":8.1},{"x":602.8,"y":191.6,"d":0.7,"t":6.03},{"x":297.2,"y":197.1,"d":1.38,"t":4.39},{"x":713.9,"y":119.4,"d":8.97,"t":5.1},{"x":508.3,"y":163.8,"d":5.69,"t":4.72},{"x":563.9,"y":147.1,"d":4.11,"t":6.96},{"x":586.1,"y":224.9,"d":1.24,"t":8.61},{"x":647.2,"y":52.7,"d":7.96,"t":8.45},{"x":541.7,"y":80.5,"d":7.97,"t":8.54},{"x":836.1,"y":169.3,"d":6.85,"t":5.38},{"x":497.2,"y":169.3,"d":0.09,"t":5.24},{"x":830.6,"y":19.4,"d":0.68,"t":4.01},{"x":497.2,"y":163.8,"d":5.55,"t":5.16},{"x":208.3,"y":102.7,"d":6.67,"t":6.45},{"x":347.2,"y":280.4,"d":6.19,"t":5.19},{"x":813.9,"y":219.3,"d":7.94,"t":5.18},{"x":930.6,"y":30.5,"d":3.37,"t":8.47},{"x":269.4,"y":113.8,"d":1.07,"t":6.45},{"x":363.9,"y":280.4,"d":0.03,"t":8.56},{"x":591.7,"y":163.8,"d":5.73,"t":8.61},{"x":780.6,"y":147.1,"d":0.19,"t":8.5},{"x":547.2,"y":130.5,"d":1.69,"t":8.84},{"x":386.1,"y":274.8,"d":5.09,"t":7.4},{"x":308.3,"y":274.8,"d":2.4,"t":5.11},{"x":502.8,"y":80.5,"d":1.88,"t":6.82},{"x":158.3,"y":75,"d":0.47,"t":7.85},{"x":386.1,"y":236,"d":6.31,"t":7.57},{"x":847.2,"y":69.4,"d":4.48,"t":4.16},{"x":791.7,"y":36.1,"d":0.99,"t":8.6},{"x":730.6,"y":63.9,"d":1.18,"t":7.44},{"x":563.9,"y":91.6,"d":8.04,"t":4.19},{"x":669.4,"y":63.9,"d":7.95,"t":8.31},{"x":586.1,"y":285.9,"d":8.93,"t":8.77},{"x":525,"y":124.9,"d":6.88,"t":6.1},{"x":713.9,"y":180.4,"d":2.23,"t":7.64},{"x":363.9,"y":258.2,"d":7.94,"t":5.99},{"x":997.2,"y":19.4,"d":2.11,"t":6.02},{"x":780.6,"y":58.3,"d":7.98,"t":6.79},{"x":663.9,"y":124.9,"d":3.16,"t":7.11},{"x":180.6,"y":113.8,"d":6.61,"t":5.68},{"x":241.7,"y":91.6,"d":6.53,"t":6.11},{"x":925,"y":41.6,"d":1.79,"t":5.56},{"x":325,"y":274.8,"d":8.87,"t":8.97},{"x":852.8,"y":19.4,"d":5.69,"t":8.36},{"x":197.2,"y":80.5,"d":8.26,"t":5},{"x":341.7,"y":75,"d":5.81,"t":4.68},{"x":208.3,"y":158.2,"d":4.48,"t":6.79},{"x":552.8,"y":280.4,"d":6.94,"t":8.73},{"x":525,"y":113.8,"d":4.34,"t":4.94},{"x":108.3,"y":41.6,"d":4.02,"t":4.83},{"x":636.1,"y":86.1,"d":5.96,"t":6.61},{"x":225,"y":63.9,"d":5.05,"t":6.53},{"x":175,"y":80.5,"d":6.81,"t":5.81},{"x":291.7,"y":91.6,"d":6.76,"t":4.13},{"x":852.8,"y":69.4,"d":2.69,"t":6.71},{"x":225,"y":119.4,"d":1.82,"t":7.61},{"x":497.2,"y":141.6,"d":2.62,"t":5.18},{"x":197.2,"y":52.7,"d":5.94,"t":6.15},{"x":875,"y":269.3,"d":0.68,"t":7.86},{"x":725,"y":97.2,"d":7.41,"t":8.58},{"x":586.1,"y":247.1,"d":8.19,"t":7.4},{"x":547.2,"y":147.1,"d":8.63,"t":4.13},{"x":530.6,"y":147.1,"d":6.86,"t":7.01},{"x":586.1,"y":113.8,"d":6.52,"t":8.49}];
+
+/** Items for the slow wire strip under the masthead. The h-index line is filled in live. */
+export const WIRE_ITEMS = [
+  'Latest paper, in Abacus: “Clarity and Conciseness of Financial Narrative Disclosures”',
+  '{hIndex}',
+  '1,260 citations on Google Scholar',
+  'Latest talk: ICAN UK conference, London',
+  'Now accepting PhD students',
+  'Teaching Sustainability and Accountability, MSc International Accounting and Finance',
 ];
 
 export const PROFILE_LINKS: LinkItem[] = [
