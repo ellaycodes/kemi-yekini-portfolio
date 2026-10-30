@@ -363,6 +363,31 @@ export const MOMENTS: Moment[] = [
   { img: '/assets/group_photo2.jpeg', title: 'An evening in Sandton', place: 'Johannesburg · January 2020', story: 1 },
 ];
 
+export interface Quote {
+  text: string;
+  name: string;
+  role: string;
+}
+
+/** Testimonials, lightly edited for grammar. The first one shows as the large lead quote. */
+export const QUOTES: Quote[] = [
+  {
+    text: 'I was fortunate to be Kemi’s PhD supervisor. Her work was always of the highest quality. She showed great academic ability, studied independently, and brought real insight to everything she did. She is a model academic!',
+    name: 'Dr Kumba Jallow',
+    role: 'Lecturer, De Montfort University',
+  },
+  {
+    text: 'Kemi was a very dutiful member of staff who was always keen to give her best to every audit assignment, and she consistently delivered very good work. She is also deeply committed to the firm’s long-term goals. I highly recommend her.',
+    name: 'Ebenezer',
+    role: 'CEO, KOO Partners, Lagos',
+  },
+  {
+    text: 'Kemi is a highly skilled professional with a pragmatic, can-do approach. I really enjoyed working with her and found her supportive as well as fun to be around.',
+    name: 'Jan Meredith',
+    role: 'Development Manager, South Leicestershire College',
+  },
+];
+
 export const PROFILE_LINKS: LinkItem[] = [
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/profkemiyekini/' },
   { label: 'Aston profile', href: 'https://research.aston.ac.uk/en/persons/cecilia-olukemi-yekini' },
