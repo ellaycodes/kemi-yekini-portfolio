@@ -26,6 +26,7 @@ import {
   PATH,
   PROFILE_LINKS,
   PUBLICATIONS,
+  QUOTES,
   RESEARCH_COLUMNS,
   ROLES,
   STORIES,
@@ -44,26 +45,11 @@ interface ModalView {
   cite?: Record<CiteStyle, FormattedCitation>;
 }
 
-export interface Quote {
-  text: string;
-  name: string;
-  role: string;
-}
-
 type Open = { kind: 'pub' | 'story'; index: number } | null;
 
 const PORTRAIT_KEY = makeStateKey<string>('edition-portrait');
 const FALLBACK_PORTRAIT = '/assets/portrait.jpeg';
 const H_INDEX_KEY = makeStateKey<number>('edition-h-index');
-const QUOTES_KEY = makeStateKey<Quote[]>('edition-quotes');
-
-/** Joins every text node of a Contentful rich-text document into paragraphs. */
-function richText(doc: any): string {
-  const paras: string[] = (doc?.content ?? []).map((block: any) =>
-    (block?.content ?? []).map((n: any) => n?.value ?? '').join(''),
-  );
-  return paras.filter((p) => p.trim()).join(' ').trim();
-}
 
 @Component({
   selector: 'edition',
@@ -97,8 +83,8 @@ export class Edition implements OnInit, OnDestroy {
   /** Live h-index from OpenAlex. Falls back to the figure in edition.data.ts. */
   private hIndex = signal<number | null>(this.transferState.get(H_INDEX_KEY, null));
 
-  /** Testimonials from Contentful, shown as pull quotes. Section hides when empty. */
-  readonly quotes = signal<Quote[]>(this.transferState.get(QUOTES_KEY, []));
+  /** Testimonials, hard-coded in edition.data.ts so they render with the page. */
+  readonly quotes = signal(QUOTES);
 
   /** 0 → 1 progress of the stats count-up. Server render shows final values. */
   private progress = signal(1);
@@ -167,7 +153,6 @@ export class Edition implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadPortrait();
     this.loadHIndex();
-    this.loadQuotes();
   }
 
   private loadPortrait(): void {
@@ -209,28 +194,6 @@ export class Edition implements OnInit, OnDestroy {
       clearTimeout(timer);
       done();
     }
-  }
-
-  private loadQuotes(): void {
-    if (this.quotes().length) return;
-    const done = this.pendingTasks.add();
-    this.contentful.getEntriesByContentType('testimonialPage').subscribe({
-      next: (data: any) => {
-        const items: any[] = data?.items?.[0]?.fields?.testimonial ?? [];
-        const quotes = items
-          .map((t) => ({
-            text: richText(t?.fields?.testimonialContent),
-            name: t?.fields?.name ?? '',
-            role: t?.fields?.jobTitle ?? '',
-          }))
-          .filter((q) => q.text && q.name)
-          .slice(0, 3);
-        this.quotes.set(quotes);
-        this.transferState.set(QUOTES_KEY, quotes);
-        done();
-      },
-      error: () => done(),
-    });
   }
 
   ngOnDestroy(): void {
