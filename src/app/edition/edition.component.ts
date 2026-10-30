@@ -16,11 +16,13 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { ContentfulService } from '../contentful.service';
+import { CiteStyle, FormattedCitation, formatCitation } from './cite';
 import {
   ABOUT_STATS,
   BANDS,
   HERO_STATS,
   MOMENTS,
+  OPENALEX_AUTHOR,
   PATH,
   PROFILE_LINKS,
   PUBLICATIONS,
@@ -39,12 +41,29 @@ interface ModalView {
   body: string[];
   href?: string;
   linkText?: string;
+  cite?: Record<CiteStyle, FormattedCitation>;
+}
+
+export interface Quote {
+  text: string;
+  name: string;
+  role: string;
 }
 
 type Open = { kind: 'pub' | 'story'; index: number } | null;
 
 const PORTRAIT_KEY = makeStateKey<string>('edition-portrait');
 const FALLBACK_PORTRAIT = '/assets/portrait.jpeg';
+const H_INDEX_KEY = makeStateKey<number>('edition-h-index');
+const QUOTES_KEY = makeStateKey<Quote[]>('edition-quotes');
+
+/** Joins every text node of a Contentful rich-text document into paragraphs. */
+function richText(doc: any): string {
+  const paras: string[] = (doc?.content ?? []).map((block: any) =>
+    (block?.content ?? []).map((n: any) => n?.value ?? '').join(''),
+  );
+  return paras.filter((p) => p.trim()).join(' ').trim();
+}
 
 @Component({
   selector: 'edition',
@@ -75,15 +94,28 @@ export class Edition implements OnInit, OnDestroy {
    */
   readonly portrait = signal<string | null>(this.transferState.get(PORTRAIT_KEY, null));
 
+  /** Live h-index from OpenAlex. Falls back to the figure in edition.data.ts. */
+  private hIndex = signal<number | null>(this.transferState.get(H_INDEX_KEY, null));
+
+  /** Testimonials from Contentful, shown as pull quotes. Section hides when empty. */
+  readonly quotes = signal<Quote[]>(this.transferState.get(QUOTES_KEY, []));
+
   /** 0 → 1 progress of the stats count-up. Server render shows final values. */
   private progress = signal(1);
   readonly heroStats = computed(() => {
     const eased = 1 - Math.pow(1 - this.progress(), 3);
-    return HERO_STATS.map((s) => ({
-      label: s.label,
-      value: Math.round(s.value * eased).toLocaleString('en-GB') + (s.suffix ?? ''),
-    }));
+    const h = this.hIndex();
+    return HERO_STATS.map((s) => {
+      const target = s.live === 'hIndex' && h ? h : s.value;
+      return {
+        label: s.label,
+        value: Math.round(target * eased).toLocaleString('en-GB') + (s.suffix ?? ''),
+      };
+    });
   });
+
+  readonly citeStyle = signal<CiteStyle>('apa');
+  readonly copied = signal(false);
 
   readonly open = signal<Open>(null);
   readonly modal = computed<ModalView | null>(() => {
@@ -98,6 +130,7 @@ export class Edition implements OnInit, OnDestroy {
         body: p.body,
         href: p.href,
         linkText: 'Read the paper',
+        cite: p.cite ? { apa: formatCitation(p.cite, 'apa'), harvard: formatCitation(p.cite, 'harvard') } : undefined,
       };
     }
     const s = STORIES[o.index];
@@ -132,6 +165,12 @@ export class Edition implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.loadPortrait();
+    this.loadHIndex();
+    this.loadQuotes();
+  }
+
+  private loadPortrait(): void {
     if (this.portrait()) return;
     const done = this.pendingTasks.add();
     this.contentful.getEntriesByContentType('introductionPage').subscribe({
@@ -148,6 +187,49 @@ export class Edition implements OnInit, OnDestroy {
         if (this.isBrowser) this.portrait.set(FALLBACK_PORTRAIT);
         done();
       },
+    });
+  }
+
+  /** Baked in at build time, then refreshed in the browser so it stays current. */
+  private async loadHIndex(): Promise<void> {
+    const done = this.pendingTasks.add();
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5000);
+    try {
+      const res = await fetch(OPENALEX_AUTHOR, { signal: controller.signal });
+      const json = await res.json();
+      const h = Number(json?.summary_stats?.h_index);
+      if (h > 0) {
+        this.hIndex.set(h);
+        this.transferState.set(H_INDEX_KEY, h);
+      }
+    } catch {
+      /* keep the fallback figure */
+    } finally {
+      clearTimeout(timer);
+      done();
+    }
+  }
+
+  private loadQuotes(): void {
+    if (this.quotes().length) return;
+    const done = this.pendingTasks.add();
+    this.contentful.getEntriesByContentType('testimonialPage').subscribe({
+      next: (data: any) => {
+        const items: any[] = data?.items?.[0]?.fields?.testimonial ?? [];
+        const quotes = items
+          .map((t) => ({
+            text: richText(t?.fields?.testimonialContent),
+            name: t?.fields?.name ?? '',
+            role: t?.fields?.jobTitle ?? '',
+          }))
+          .filter((q) => q.text && q.name)
+          .slice(0, 3);
+        this.quotes.set(quotes);
+        this.transferState.set(QUOTES_KEY, quotes);
+        done();
+      },
+      error: () => done(),
     });
   }
 
@@ -233,6 +315,33 @@ export class Edition implements OnInit, OnDestroy {
     this.teardown.push(() => io.disconnect());
   }
 
+  setCiteStyle(style: CiteStyle): void {
+    this.citeStyle.set(style);
+    this.copied.set(false);
+  }
+
+  /** Copies the citation, keeping italics when pasted into Word or Google Docs. */
+  async copyCitation(): Promise<void> {
+    const c = this.modal()?.cite?.[this.citeStyle()];
+    if (!c || !this.isBrowser) return;
+    try {
+      if ('ClipboardItem' in window && navigator.clipboard?.write) {
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'text/plain': new Blob([c.text], { type: 'text/plain' }),
+            'text/html': new Blob([c.html], { type: 'text/html' }),
+          }),
+        ]);
+      } else {
+        await navigator.clipboard.writeText(c.text);
+      }
+      this.copied.set(true);
+      setTimeout(() => this.copied.set(false), 2200);
+    } catch {
+      /* clipboard blocked: the citation text stays selectable on screen */
+    }
+  }
+
   openPub(index: number): void {
     this.show({ kind: 'pub', index });
   }
@@ -246,6 +355,7 @@ export class Edition implements OnInit, OnDestroy {
       this.lastFocus = document.activeElement as HTMLElement | null;
       document.body.style.overflow = 'hidden';
     }
+    this.copied.set(false);
     this.open.set(o);
     setTimeout(() => this.closeButton?.nativeElement.focus());
   }

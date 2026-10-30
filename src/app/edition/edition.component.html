@@ -105,12 +105,36 @@
     </div>
   </section>
 
+  <!-- Interlude: pull quotes from Contentful testimonials (hidden when there are none) -->
+  @if (quotes().length) {
+    <section class="ed-quotes" aria-label="What colleagues say">
+      <div class="ed-section">
+        <div class="ed-secthead"><span>Interlude</span><span>In their words</span></div>
+        <div class="ed-quote-grid" [class.ed-quote-single]="quotes().length === 1">
+          @for (q of quotes(); track q.name; let first = $first) {
+            <figure class="ed-quote ed-rise" [class.ed-quote-lead]="first">
+              <span class="ed-serif ed-quote-mark" aria-hidden="true">“</span>
+              <blockquote class="ed-serif">{{ q.text }}</blockquote>
+              <figcaption>
+                <span class="ed-quote-name">{{ q.name }}</span>
+                @if (q.role) {
+                  <span class="ed-quote-role">{{ q.role }}</span>
+                }
+              </figcaption>
+            </figure>
+          }
+        </div>
+      </div>
+    </section>
+  }
+
   <!-- III · Publications -->
   <section class="ed-band-paper">
     <div class="ed-section">
       <div class="ed-secthead"><span>III · Publications</span><span>Selected from 37 outputs</span></div>
       <h2 class="ed-serif ed-h2 ed-rise ed-h2-gap">Selected work</h2>
-      <p class="ed-hint ed-rise">Select any paper to read a short summary.</p>
+      <p class="ed-hint ed-rise">Select any paper to read a short summary and citation.</p>
+      <p class="ed-swipe" aria-hidden="true">Swipe for all {{ pubs.length }} papers <svg class="ed-ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></p>
       <div class="ed-covers">
         @for (pub of pubs; track pub.title; let i = $index) {
           <button type="button" class="ed-cover" [class.ed-feature]="pub.feature" [style.background]="pub.bg" (click)="openPub(i)">
@@ -148,7 +172,7 @@
           <p class="ed-label">{{ b.label }}</p>
           <p class="ed-bandtext">{{ b.text }}</p>
           @if (b.href) {
-            <a class="ed-chip" [href]="b.href" target="_blank" rel="noopener">{{ b.linkText }} ↗</a>
+            <a class="ed-chip" [href]="b.href" target="_blank" rel="noopener">{{ b.linkText }} <svg class="ed-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8" /></svg></a>
           }
         </div>
       }
@@ -157,7 +181,7 @@
       <p class="ed-label">Find Kemi</p>
       <nav class="ed-chips" aria-label="Find Kemi online">
         @for (l of links; track l.label) {
-          <a class="ed-chip" [href]="l.href" target="_blank" rel="noopener">{{ l.label }} ↗</a>
+          <a class="ed-chip" [href]="l.href" target="_blank" rel="noopener">{{ l.label }} <svg class="ed-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8" /></svg></a>
         }
       </nav>
     </div>
@@ -214,7 +238,7 @@
       </div>
       <div class="ed-colophon">
         <span>Professor Kemi C. Yekini · Aston Business School, Birmingham</span>
-        <a href="#top">Back to top ↑</a>
+        <a href="#top">Back to top <svg class="ed-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg></a>
       </div>
     </div>
   </section>
@@ -240,7 +264,27 @@
           }
         </div>
         @if (m.href) {
-          <a class="ed-chip ed-chip-solid" [href]="m.href" target="_blank" rel="noopener">{{ m.linkText }} ↗</a>
+          <a class="ed-chip ed-chip-solid" [href]="m.href" target="_blank" rel="noopener">{{ m.linkText }} <svg class="ed-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8" /></svg></a>
+        }
+        @if (m.cite; as cite) {
+          <div class="ed-cite">
+            <div class="ed-cite-head">
+              <p class="ed-label">Cite this</p>
+              <div class="ed-cite-tabs" role="group" aria-label="Citation style">
+                <button type="button" class="ed-reset ed-cite-tab" [class.is-on]="citeStyle() === 'apa'" [attr.aria-pressed]="citeStyle() === 'apa'" (click)="setCiteStyle('apa')">APA 7</button>
+                <button type="button" class="ed-reset ed-cite-tab" [class.is-on]="citeStyle() === 'harvard'" [attr.aria-pressed]="citeStyle() === 'harvard'" (click)="setCiteStyle('harvard')">Harvard</button>
+              </div>
+            </div>
+            <p class="ed-cite-text" [innerHTML]="cite[citeStyle()].html"></p>
+            <button type="button" class="ed-reset ed-chip ed-cite-copy" (click)="copyCitation()">
+              @if (copied()) {
+                <svg class="ed-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg> Copied
+              } @else {
+                <svg class="ed-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="1.5" /><path d="M5 15V6a1 1 0 0 1 1-1h9" /></svg> Copy citation
+              }
+            </button>
+            <span class="ed-sr" aria-live="polite">{{ copied() ? 'Citation copied' : '' }}</span>
+          </div>
         }
       </div>
     </div>
