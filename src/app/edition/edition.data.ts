@@ -14,6 +14,21 @@ export interface PathEntry {
   detail: string;
 }
 
+/** Structured reference data. Authors are [family name, initials]. */
+export interface Citation {
+  authors: [string, string][];
+  year: string;
+  title: string;
+  container: string;
+  volume?: string;
+  issue?: string;
+  pages?: string;
+  article?: string;
+  editors?: string[];
+  publisher?: string;
+  doi: string;
+}
+
 export interface Publication {
   feature?: boolean;
   bg: string;
@@ -23,6 +38,7 @@ export interface Publication {
   year: string;
   authors?: string;
   href?: string;
+  cite?: Citation;
   body: string[];
 }
 
@@ -63,12 +79,20 @@ export interface Band {
 export const ROLES =
   'Professor of Accounting · Chartered Accountant · Fraud Examiner · Editor · Researcher ·';
 
-export const HERO_STATS: Stat[] = [
+export interface HeroStat extends Stat {
+  /** Filled from OpenAlex at build time and in the browser. */
+  live?: 'hIndex';
+}
+
+/** Citations come from Google Scholar (no public API), so they are updated by hand. */
+export const HERO_STATS: HeroStat[] = [
   { value: 1260, label: 'Citations' },
-  { value: 37, label: 'Research outputs' },
+  { value: 13, label: 'h-index', live: 'hIndex' },
   { value: 23, label: 'Journal articles' },
   { value: 30, suffix: '+', label: 'Years in accounting' },
 ];
+
+export const OPENALEX_AUTHOR = 'https://api.openalex.org/authors/orcid:0000-0003-2971-8094?select=summary_stats';
 
 export const ABOUT_STATS = [
   { value: '1992', label: 'Chartered with ICAN' },
@@ -88,6 +112,10 @@ export const PATH: PathEntry[] = [
   { year: 'Now', title: 'Professor of Accounting, Aston Business School', detail: 'Teaching, research and PhD supervision' },
 ];
 
+const ESM_EDITORS = [
+  'S. O. Idowu', 'R. Schmidpeter', 'N. Capaldi', 'L. Zu', 'M. Del Baldo', 'R. Abreu',
+];
+
 export const PUBLICATIONS: Publication[] = [
   {
     feature: true,
@@ -98,10 +126,44 @@ export const PUBLICATIONS: Publication[] = [
     year: '2025',
     authors: 'Ekaete Efretuei and Kemi Yekini',
     href: 'https://doi.org/10.1111/abac.70018',
+    cite: {
+      authors: [['Efretuei', 'E.'], ['Yekini', 'K. C.']],
+      year: '2025',
+      title: 'Clarity and conciseness of financial narrative disclosures: Does the practice statement matter?',
+      container: 'Abacus',
+      volume: '61',
+      issue: '4',
+      pages: '1110–1144',
+      doi: '10.1111/abac.70018',
+    },
     body: [
       'The IASB asked, in its 2021 exposure draft on management commentary, whether clarity and conciseness matter in what companies write about their performance. This paper answers that question with evidence.',
       'Using a new measure built specifically for financial disclosures, the authors test whether adopting IFRS made management commentary clearer and more concise. They find the opposite: narratives became less clear and less concise after firms adopted IFRS.',
       'The findings were presented at the IFRS Foundation research forum in November 2024. The paper is open access.',
+    ],
+  },
+  {
+    bg: '#3a4658',
+    venue: 'Business Ethics, the Environment & Responsibility',
+    title: 'Socially Responsible Purchasing (SRP) in the Supply Chain Industry: Meanings and Influences',
+    kind: 'Journal article',
+    year: '2025',
+    authors: 'Titilayo Ogunyemi, Emmanuel Adegbite, Franklin Nakpodia, Kemi Yekini and Angela Ayios',
+    href: 'https://doi.org/10.1111/beer.12655',
+    cite: {
+      authors: [['Ogunyemi', 'T.'], ['Adegbite', 'E.'], ['Nakpodia', 'F.'], ['Yekini', 'K. C.'], ['Ayios', 'A.']],
+      year: '2025',
+      title: 'Socially responsible purchasing (SRP) in the supply chain industry: Meanings and influences',
+      container: 'Business Ethics, the Environment & Responsibility',
+      volume: '34',
+      issue: '2',
+      pages: '362–376',
+      doi: '10.1111/beer.12655',
+    },
+    body: [
+      'Companies are under growing pressure to act responsibly across their supply chains, but what does socially responsible purchasing actually mean in practice?',
+      'Using stakeholder theory and face-to-face interviews with practitioners at multinational and local organisations in Nigeria, the paper maps the meaning of SRP, its components and boundaries, and the internal and external pressures that shape it.',
+      'It offers practical insight for managers, purchasers, suppliers, analysts and policymakers. The paper is open access.',
     ],
   },
   {
@@ -112,6 +174,15 @@ export const PUBLICATIONS: Publication[] = [
     year: '2024',
     authors: 'Ibrahim Elmghaamez, Collins G. Ntim and Kemi Yekini',
     href: 'https://doi.org/10.1016/j.intaccaudtax.2024.100641',
+    cite: {
+      authors: [['Elmghaamez', 'I. K.'], ['Ntim', 'C. G.'], ['Yekini', 'K. C.']],
+      year: '2024',
+      title: 'Diffusion theory, economic consequences, and adoption of international standards on auditing around the world',
+      container: 'Journal of International Accounting, Auditing and Taxation',
+      volume: '56',
+      article: '100641',
+      doi: '10.1016/j.intaccaudtax.2024.100641',
+    },
     body: [
       'What happens to a country’s economy when it adopts the International Standards on Auditing? Drawing on 160 countries over 20 years, this study looks at that question through diffusion of innovation theory.',
       'Early adoption is linked to stronger foreign direct investment and exchange rates, and late adoption to exports and interest rates. The results also show some negative links, including between early adoption and export growth, so the economic effects are mixed rather than uniformly positive.',
@@ -119,24 +190,10 @@ export const PUBLICATIONS: Publication[] = [
     ],
   },
   {
-    bg: '#3a4658',
-    venue: 'Business Ethics, the Environment & Responsibility',
-    title: 'Socially Responsible Purchasing (SRP) in the Supply Chain Industry: Meanings and Influences',
-    kind: 'Journal article',
-    year: '2024',
-    authors: 'Titilayo Ogunyemi, Emmanuel Adegbite, Franklin Nakpodia, Kemi Yekini and Angela Ayios',
-    href: 'https://doi.org/10.1111/beer.12655',
-    body: [
-      'Companies are under growing pressure to act responsibly across their supply chains, but what does socially responsible purchasing actually mean in practice?',
-      'Using stakeholder theory and face-to-face interviews with practitioners at multinational and local organisations in Nigeria, the paper maps the meaning of SRP, its components and boundaries, and the internal and external pressures that shape it.',
-      'It offers practical insight for managers, purchasers, suppliers, analysts and policymakers. The paper is open access.',
-    ],
-  },
-  {
     bg: '#0e1b30',
     venue: 'Business & Society',
     title: 'Making sense of CSR reports the semiotic way',
-    kind: 'Journal article',
+    kind: 'Article',
     year: '2023',
     body: [
       'How semiotics, the study of signs and meaning, can strengthen corporate social responsibility communication.',
@@ -144,43 +201,85 @@ export const PUBLICATIONS: Publication[] = [
     ],
   },
   {
-    bg: '#24385a',
-    venue: 'Business & Society · SAGE',
-    title: 'A theoretical model for measuring CSR/sustainability reports quality',
-    kind: 'Journal article',
-    year: '2019',
-    href: 'https://doi.org/10.1177/0007650319843623',
-    body: [
-      'This article presents a semiotics-based model for judging the quality of CSR and sustainability reports through the language they use.',
-      'The model gives researchers and practitioners both qualitative and quantitative tools to assess how transparent and accurate a company’s sustainability communication really is.',
-    ],
-  },
-  {
     bg: '#3a4658',
     venue: 'Encyclopedia of Sustainable Management',
     title: 'Making Sense of CSR Reports: A Methodological Perspective from Semiotics',
     kind: 'Encyclopedia entry',
-    year: 'Springer',
+    year: '2023',
+    authors: 'Kemi Yekini',
     href: 'https://doi.org/10.1007/978-3-030-02006-4_1159-1',
+    cite: {
+      authors: [['Yekini', 'K. C.']],
+      year: '2023',
+      title: 'Making sense of CSR reports: A methodological perspective from semiotics',
+      container: 'Encyclopedia of sustainable management',
+      editors: ESM_EDITORS,
+      publisher: 'Springer',
+      doi: '10.1007/978-3-030-02006-4_1159-1',
+    },
     body: ['A reference entry on using semiotics to assess CSR reports, showing how language and symbols reveal a company’s transparency and ethical values.'],
-  },
-  {
-    bg: '#0e1b30',
-    venue: 'Encyclopedia of Sustainable Management',
-    title: 'Corporate Community Involvement',
-    kind: 'Encyclopedia entry',
-    year: 'Springer',
-    href: 'https://doi.org/10.1007/978-3-030-02006-4_346-1',
-    body: ['A reference entry defining corporate community involvement: how businesses engage in initiatives that meet the needs of the communities they operate in.'],
   },
   {
     bg: '#24385a',
     venue: 'Encyclopedia of Sustainable Management',
+    title: 'Corporate Community Involvement',
+    kind: 'Encyclopedia entry',
+    year: '2023',
+    authors: 'Kemi Yekini',
+    href: 'https://doi.org/10.1007/978-3-030-02006-4_346-1',
+    cite: {
+      authors: [['Yekini', 'K. C.']],
+      year: '2023',
+      title: 'Corporate community involvement',
+      container: 'Encyclopedia of sustainable management',
+      editors: ESM_EDITORS,
+      publisher: 'Springer',
+      doi: '10.1007/978-3-030-02006-4_346-1',
+    },
+    body: ['A reference entry defining corporate community involvement: how businesses engage in initiatives that meet the needs of the communities they operate in.'],
+  },
+  {
+    bg: '#0e1b30',
+    venue: 'Encyclopedia of Sustainable Management',
     title: 'CSR Disclosure, Quality Measurement of',
     kind: 'Encyclopedia entry',
-    year: 'Springer',
+    year: '2023',
+    authors: 'Kemi Yekini',
     href: 'https://doi.org/10.1007/978-3-030-02006-4_344-1',
+    cite: {
+      authors: [['Yekini', 'K. C.']],
+      year: '2023',
+      title: 'CSR disclosure, quality measurement of',
+      container: 'Encyclopedia of sustainable management',
+      editors: ESM_EDITORS,
+      publisher: 'Springer',
+      doi: '10.1007/978-3-030-02006-4_344-1',
+    },
     body: ['A reference entry on why measuring the quality of CSR disclosure is hard, and how scholars differ on its definitions and metrics.'],
+  },
+  {
+    bg: '#3a4658',
+    venue: 'Business & Society · SAGE',
+    title: 'CSR Communication Research: A Theoretical-cum-Methodological Perspective from Semiotics',
+    kind: 'Journal article',
+    year: '2021',
+    authors: 'Kemi Yekini, Kamil Omoteso and Emmanuel Adegbite',
+    href: 'https://doi.org/10.1177/0007650319843623',
+    cite: {
+      authors: [['Yekini', 'K. C.'], ['Omoteso', 'K.'], ['Adegbite', 'E.']],
+      year: '2021',
+      title: 'CSR communication research: A theoretical-cum-methodological perspective from semiotics',
+      container: 'Business & Society',
+      volume: '60',
+      issue: '4',
+      pages: '876–908',
+      doi: '10.1177/0007650319843623',
+    },
+    body: [
+      'Research on the quality of CSR communication has long been fragmented, with no shared method for judging it. This article offers one.',
+      'Drawing on semiotics, the authors read the sustainability and CSR reports of selected FTSE 100 companies using the Greimas narrative schema and the semiotic square of veridiction, which separates what a report claims from what it shows.',
+      'The result is a CSR report quality model that policymakers and firms can use when designing sustainability and CSR reporting standards.',
+    ],
   },
 ];
 

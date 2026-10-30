@@ -470,6 +470,10 @@ body {
   grid-column: span 2;
 }
 
+.ed-swipe {
+  display: none;
+}
+
 .ed-cover-venue {
   font-size: 12px;
   font-weight: 700;
@@ -858,6 +862,146 @@ body {
   line-height: 1.65;
 }
 
+/* Line icons (replace text arrows, which iOS renders as emoji) */
+
+.ed-ico {
+  width: 1em;
+  height: 1em;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ed-colophon a {
+  gap: 8px;
+}
+
+.ed-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Interlude: pull quotes */
+
+.ed-quotes {
+  background: var(--ed-navy);
+  color: var(--ed-paper);
+}
+
+.ed-quote-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 56px 48px;
+  margin-top: 56px;
+}
+
+.ed-quote {
+  margin: 0;
+  position: relative;
+}
+
+.ed-quote-lead {
+  grid-column: 1 / -1;
+}
+
+.ed-quote-mark {
+  display: block;
+  height: 0.55em;
+  font-size: 120px;
+  line-height: 1;
+  color: var(--ed-accent);
+}
+
+.ed-quote blockquote {
+  margin: 0;
+  font-size: clamp(22px, 2vw, 28px);
+  line-height: 1.4;
+}
+
+.ed-quote-lead blockquote {
+  max-width: 32ch;
+  font-size: clamp(30px, 3.6vw, 52px);
+  font-weight: 500;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+}
+
+.ed-quote figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(246, 242, 234, 0.35);
+  max-width: 420px;
+}
+
+.ed-quote-name {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ed-accent);
+}
+
+.ed-quote-role {
+  font-size: 15px;
+  color: var(--ed-on-navy);
+}
+
+/* Cite this */
+
+.ed-cite {
+  margin-top: 32px;
+  padding: 24px;
+  background: var(--ed-paper-2);
+}
+
+.ed-cite-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.ed-cite-tabs {
+  display: inline-flex;
+  border: 1.5px solid var(--ed-ink);
+}
+
+.ed-cite-tab {
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ed-cite-tab.is-on {
+  background: var(--ed-ink);
+  color: var(--ed-paper);
+}
+
+.ed .ed-cite-text {
+  margin: 16px 0 18px;
+  font-family: var(--ed-serif);
+  font-size: 17px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+.ed .ed-cite-copy {
+  cursor: pointer;
+}
+
 /* ---------- Motion ---------- */
 
 @keyframes ed-dialog-in {
@@ -982,8 +1126,42 @@ body {
   .ed-twocol { column-count: 1; }
   .ed-pathrow { grid-template-columns: 90px minmax(0, 1fr); }
   .ed-path-detail { grid-column: 2; }
-  .ed-covers { grid-template-columns: 1fr; }
+  /* Publications become a swipeable row so the section is about one screen tall */
+  .ed .ed-swipe {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .ed-covers {
+    display: flex;
+    gap: 14px;
+    margin: 20px calc(-1 * var(--ed-gutter)) 0;
+    padding: 0 var(--ed-gutter) 6px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--ed-gutter);
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .ed-covers::-webkit-scrollbar { display: none; }
+  .ed-cover {
+    flex: 0 0 82%;
+    min-height: 320px;
+    padding: 24px;
+    scroll-snap-align: start;
+  }
+  .ed-cover:hover { transform: none; box-shadow: none; }
   .ed-feature { grid-column: auto; }
+  .ed-feature .ed-cover-title, .ed-cover-title { font-size: 22px; padding-top: 28px; }
+  .ed-covers > .ed-cover { animation: none !important; }
+  .ed-cover-foot { font-size: 12px; align-items: baseline; }
+  .ed-cover-foot .ed-strong { white-space: nowrap; }
+  .ed-io .ed-covers .ed-cover { opacity: 1; transform: none; }
   .ed-cols3 { grid-template-columns: 1fr; }
   .ed-cols3 > div + div { border-left: 0; padding-left: 0; }
   .ed-bandrow { grid-template-columns: 1fr; justify-items: start; }
@@ -992,6 +1170,9 @@ body {
   .ed-tiles { grid-template-columns: 1fr; }
   .ed-big { grid-column: auto; }
   .ed-dialog { padding: 28px; }
+  .ed-quote-grid { grid-template-columns: 1fr; }
+  .ed-quote-mark { font-size: 88px; }
+  .ed-cite { padding: 18px; }
   .ed-section { padding-top: 80px; padding-bottom: 80px; }
   .ed-section-tight { padding-top: 0; }
 }
