@@ -1,4 +1,5 @@
 <div #root id="top" class="ed">
+  <div class="ed-progress" aria-hidden="true"></div>
 
   <!-- Cover: pinned hero, then the statement rises over it -->
   <div #stage class="ed-stage">
@@ -7,7 +8,21 @@
         <div class="ed-masthead-bar">
           <span>Aston Business School</span>
           <span class="ed-serif ed-masthead-title">A portfolio of research &amp; practice</span>
-          <span>Birmingham · 2026</span>
+          <span class="ed-dateline"><span class="ed-dl-long">{{ dateline() }}</span><span class="ed-dl-short">{{ datelineShort() }}</span></span>
+        </div>
+        <div class="ed-wire" aria-label="Latest">
+          <span class="ed-wire-label">Latest</span>
+          <div class="ed-wire-window">
+            <div class="ed-wire-track">
+              @for (copy of [0, 1]; track copy) {
+                <span class="ed-wire-run" [attr.aria-hidden]="copy === 1 ? 'true' : null">
+                  @for (item of wire(); track item) {
+                    <span class="ed-wire-item">{{ item }}</span>
+                  }
+                </span>
+              }
+            </div>
+          </div>
         </div>
       </div>
 
@@ -136,11 +151,16 @@
       <div class="ed-covers">
         @for (pub of pubs; track pub.title; let i = $index) {
           <button type="button" class="ed-cover" [class.ed-feature]="pub.feature" [style.background]="pub.bg" (click)="openPub(i)">
-            <span class="ed-cover-venue">{{ pub.venue }}</span>
+            <span class="ed-cover-venue">
+              @if (i === 0 && newestIsRecent) {
+                <span class="ed-new">New</span>
+              }
+              {{ pub.venue }}
+            </span>
             <span class="ed-serif ed-cover-title">{{ pub.title }}</span>
             <span class="ed-cover-foot">
               <span>{{ pub.kind }} · {{ pub.year }}</span>
-              <span class="ed-accent ed-strong">Read summary +</span>
+              <span class="ed-accent ed-strong ed-draw">Read summary +</span>
             </span>
           </button>
         }
@@ -185,6 +205,39 @@
     </div>
   </section>
 
+  <!-- Atlas: where the work has travelled -->
+  <section class="ed-atlas" aria-label="Where the work has travelled">
+    <div class="ed-section">
+      <div class="ed-secthead"><span>Atlas</span><span>Where the work has travelled</span></div>
+      <div class="ed-atlas-grid">
+        <div class="ed-map">
+          <img class="ed-map-dots" src="/assets/world-dots.svg" alt="" width="1000" height="372" loading="lazy" />
+          <svg class="ed-map-layer" viewBox="0 0 1000 372" aria-hidden="true">
+            @for (d of destinations; track d.name) {
+              <path class="ed-arc" [attr.d]="d.arc" pathLength="1" [style.animation-delay]="d.delay" />
+            }
+            @for (d of destinations; track d.name) {
+              <g class="ed-pin-dot" [style.animation-delay]="d.delay">
+                <circle class="ed-pin-ring" [attr.cx]="d.x" [attr.cy]="d.y" r="9" [style.animation-delay]="d.delay" />
+                <circle class="ed-pin-core" [attr.cx]="d.x" [attr.cy]="d.y" r="3.4" />
+              </g>
+            }
+            <circle class="ed-home-ring" [attr.cx]="home.x" [attr.cy]="home.y" r="12" />
+            <circle class="ed-home-core" [attr.cx]="home.x" [attr.cy]="home.y" r="4.6" />
+          </svg>
+        </div>
+        <ol class="ed-places">
+          @for (p of places; track p.name; let first = $first) {
+            <li class="ed-slide" [class.ed-place-home]="first">
+              <span class="ed-serif ed-place-name">{{ p.name }}</span>
+              <span class="ed-place-note">{{ p.note }}</span>
+            </li>
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+
   <!-- V · In the field -->
   <section class="ed-ruled">
     <div class="ed-section">
@@ -198,7 +251,7 @@
           </span>
           <span class="ed-lead-foot">
             <span class="ed-muted">{{ lead.title }}</span>
-            <span class="ed-strong">Read the story +</span>
+            <span class="ed-strong ed-draw">Read the story +</span>
           </span>
         </button>
         <div>
@@ -208,7 +261,7 @@
               <span>
                 <span class="ed-serif ed-moment-title">{{ m.title }}</span>
                 <span class="ed-moment-place">{{ m.place }}</span>
-                <span class="ed-moment-cta">Read the story +</span>
+                <span class="ed-moment-cta"><span class="ed-draw">Read the story +</span></span>
               </span>
             </button>
           }
@@ -290,6 +343,7 @@
       </button>
       <div class="ed-colophon">
         <span>Professor Kemi C. Yekini · Aston Business School, Birmingham</span>
+        <span class="ed-updated">Last updated {{ lastUpdated }}</span>
         <a href="#top">Back to top <svg class="ed-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg></a>
       </div>
     </div>

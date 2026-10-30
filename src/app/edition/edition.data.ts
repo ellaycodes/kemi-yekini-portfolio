@@ -412,6 +412,35 @@ export const TALKS: Talk[] = [
   { when: 'August 2019', event: 'Academy of Management Annual Meeting', place: 'Boston', role: 'Presenter, CSR communication and semiotics' },
 ];
 
+export interface Place {
+  name: string;
+  note: string;
+  /** Position on assets/world-dots.svg (viewBox 0 0 1000 372, equirectangular, lat 78 to -56). */
+  x: number;
+  y: number;
+}
+
+/** Where the work has travelled. Birmingham is home; arcs are drawn from it to the others. */
+export const PLACES: Place[] = [
+  { name: 'Birmingham', note: 'Home: Aston Business School', x: 494.7, y: 70.8 },
+  { name: 'London', note: 'SOAS University of London · ICAN UK conference, 2023', x: 499.6, y: 73.5 },
+  { name: 'Nigeria', note: 'Where it began: BSc, KPMG and Deloitte', x: 509.4, y: 198.4 },
+  { name: 'Enugu', note: 'ICAN academic conference, 2023', x: 520.9, y: 198.6 },
+  { name: 'Johannesburg', note: 'UN expert review, Economic Report on Africa, 2020', x: 577.9, y: 289 },
+  { name: 'Boston', note: 'Academy of Management, 2019', x: 302.6, y: 98.9 },
+  { name: 'Sydney', note: 'Abacus, published at the University of Sydney, 2025', x: 920, y: 310.6 },
+];
+
+/** Items for the slow wire strip under the masthead. The h-index line is filled in live. */
+export const WIRE_ITEMS = [
+  'New in Abacus: “Clarity and Conciseness of Financial Narrative Disclosures”',
+  '{hIndex}',
+  '1,260 citations on Google Scholar',
+  'Latest talk: ICAN UK conference, London',
+  'Now accepting PhD students',
+  'Teaching Sustainability and Accountability, MSc International Accounting and Finance',
+];
+
 export const PROFILE_LINKS: LinkItem[] = [
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/profkemiyekini/' },
   { label: 'Aston profile', href: 'https://research.aston.ac.uk/en/persons/cecilia-olukemi-yekini' },

@@ -20,6 +20,8 @@ import { CiteStyle, FormattedCitation, formatCitation } from './cite';
 import {
   ABOUT_STATS,
   Award,
+  PLACES,
+  WIRE_ITEMS,
   FALLBACK_AWARDS,
   TALKS,
   BANDS,
@@ -52,6 +54,7 @@ type Open = { kind: 'pub' | 'story'; index: number } | null;
 
 const H_INDEX_KEY = makeStateKey<number>('edition-h-index');
 const AWARDS_KEY = makeStateKey<Award[]>('edition-awards');
+const BUILT_KEY = makeStateKey<string>('edition-built-at');
 
 /** Joins the text of a Contentful rich-text field. */
 function richText(doc: any): string {
@@ -83,6 +86,50 @@ export class Edition implements OnInit, OnDestroy {
   readonly bands = BANDS;
   readonly lead = STORIES[0];
   readonly talks = TALKS;
+  readonly places = PLACES;
+  readonly home = PLACES[0];
+  readonly destinations = PLACES.slice(1).map((p, i) => ({
+    ...p,
+    /** Curved arc from Birmingham, lifted in the middle like a flight path. */
+    arc: (() => {
+      const h = PLACES[0];
+      const mx = (h.x + p.x) / 2;
+      const my = (h.y + p.y) / 2 - Math.min(90, Math.hypot(p.x - h.x, p.y - h.y) * 0.28);
+      return `M${h.x} ${h.y} Q${mx.toFixed(1)} ${my.toFixed(1)} ${p.x} ${p.y}`;
+    })(),
+    delay: `${i * 2.2}s`,
+  }));
+
+  /** Live dateline, like a newspaper edition line. Ticks every 30 seconds in the browser. */
+  private now = signal(new Date());
+  readonly dateline = computed(() => {
+    const d = this.now();
+    const date = d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/London' });
+    const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' });
+    return `${date} · ${time} in Birmingham`;
+  });
+  readonly datelineShort = computed(() => {
+    const d = this.now();
+    const date = d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Europe/London' });
+    const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' });
+    return `${date} · ${time} Birmingham`;
+  });
+
+  /** Stamped when the site is built, so it moves forward with every deploy. */
+  readonly lastUpdated = (() => {
+    const iso = this.transferState.get(BUILT_KEY, null) ?? new Date().toISOString();
+    if (!this.isBrowser) this.transferState.set(BUILT_KEY, iso);
+    return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/London' });
+  })();
+
+  /** Wire strip items, with the live h-index filled in. */
+  readonly wire = computed(() => {
+    const h = this.hIndex() ?? 13;
+    return WIRE_ITEMS.map((t) => (t === '{hIndex}' ? `h-index ${h}, refreshed from OpenAlex` : t));
+  });
+
+  /** The newest paper gets a "New" tag while it is less than about a year old. */
+  readonly newestIsRecent = Number(PUBLICATIONS[0].year) >= new Date().getFullYear() - 1;
   readonly moments = MOMENTS;
   readonly links = PROFILE_LINKS;
   readonly tiles = TILES;
@@ -162,6 +209,7 @@ export class Edition implements OnInit, OnDestroy {
 
   constructor() {
     afterNextRender(() => {
+      this.startAmbient();
       const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
       if (reduce) return;
       this.startCountUp();
@@ -277,6 +325,42 @@ export class Edition implements OnInit, OnDestroy {
     measure();
   }
 
+  /** Clock, reading progress and the cursor light on cards. Quiet, and always real. */
+  private startAmbient(): void {
+    const clock = window.setInterval(() => this.now.set(new Date()), 30000);
+    this.now.set(new Date());
+
+    const root = this.rootRef?.nativeElement;
+    let queued = false;
+    const progress = () => {
+      queued = false;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const read = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      root?.style.setProperty('--read', read.toFixed(4));
+    };
+    const onScroll = () => {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(progress);
+      }
+    };
+    const onPointer = (e: PointerEvent) => {
+      const card = (e.target as HTMLElement | null)?.closest<HTMLElement>('.ed-cover, .ed-tile');
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+      card.style.setProperty('--my', `${e.clientY - r.top}px`);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    root?.addEventListener('pointermove', onPointer, { passive: true });
+    progress();
+    this.teardown.push(() => {
+      window.clearInterval(clock);
+      window.removeEventListener('scroll', onScroll);
+      root?.removeEventListener('pointermove', onPointer);
+    });
+  }
+
   /** Browsers without CSS scroll-driven animations get reveal-on-scroll instead. */
   private startRevealFallback(): void {
     const root = this.rootRef?.nativeElement;
@@ -293,7 +377,7 @@ export class Edition implements OnInit, OnDestroy {
       },
       { rootMargin: '0px 0px -8% 0px' },
     );
-    root.querySelectorAll('.ed-rise, .ed-pop, .ed-slide, .ed-cover').forEach((el) => io.observe(el));
+    root.querySelectorAll('.ed-rise, .ed-pop, .ed-slide, .ed-cover, .ed-secthead').forEach((el) => io.observe(el));
     this.teardown.push(() => io.disconnect());
   }
 
