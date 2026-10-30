@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+
+// No route titles: the tab keeps the title set in index.html.
 import { Bio } from './bio.component';
 import { Intro } from './intro.component';
 import { Education } from './education.component';
@@ -10,13 +12,13 @@ import { Contact } from './contact.component';
 import { Home } from './home.component';
 
 export const routes: Routes = [
-  { path: '', title: 'Home',component: Home },
-  { path: 'intro', title: 'Introduction', component: Intro },
-  { path: 'bio', title: 'Biography',component: Bio },
-  { path: 'education', title: 'Education',component: Education },
-  { path: 'work', title: 'Work',component: Work },
-  { path: 'testimonials', title: 'Testimonials',component: Testimonials },
-  { path: 'accolades', title: 'Accolades',component: Accolades },
-  { path: 'articles', title: 'Articles',component: Articles },
-  { path: 'contact', title: 'Contact',component: Contact },
+  { path: '', component: Home },
+  { path: 'intro', component: Intro },
+  { path: 'bio', component: Bio },
+  { path: 'education', component: Education },
+  { path: 'work', component: Work },
+  { path: 'testimonials', component: Testimonials },
+  { path: 'accolades', component: Accolades },
+  { path: 'articles', component: Articles },
+  { path: 'contact', component: Contact },
 ];

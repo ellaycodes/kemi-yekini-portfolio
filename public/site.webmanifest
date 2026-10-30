@@ -1,0 +1,11 @@
+{
+  "name": "Prof. Kemi C. Yekini · On Accounting & Transparency",
+  "short_name": "Kemi C. Yekini",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "theme_color": "#0e1b30",
+  "background_color": "#0e1b30",
+  "display": "browser"
+}
