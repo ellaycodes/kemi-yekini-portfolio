@@ -15,7 +15,6 @@ import {
   signal,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { ContentfulService } from '../contentful.service';
 import { CiteStyle, FormattedCitation, formatCitation } from './cite';
 import {
   ABOUT_STATS,
@@ -47,8 +46,6 @@ interface ModalView {
 
 type Open = { kind: 'pub' | 'story'; index: number } | null;
 
-const PORTRAIT_KEY = makeStateKey<string>('edition-portrait');
-const FALLBACK_PORTRAIT = '/assets/portrait.jpeg';
 const H_INDEX_KEY = makeStateKey<number>('edition-h-index');
 
 @Component({
@@ -57,7 +54,6 @@ const H_INDEX_KEY = makeStateKey<number>('edition-h-index');
   templateUrl: './edition.component.html',
 })
 export class Edition implements OnInit, OnDestroy {
-  private contentful = inject(ContentfulService);
   private transferState = inject(TransferState);
   private pendingTasks = inject(PendingTasks);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -73,12 +69,8 @@ export class Edition implements OnInit, OnDestroy {
   readonly links = PROFILE_LINKS;
   readonly tiles = TILES;
 
-  /**
-   * Hero portrait from Contentful. Starts empty (not the bundled photo) so the
-   * page never shows one image and then swaps to another. The server render
-   * fetches it and hands the URL to the browser through TransferState.
-   */
-  readonly portrait = signal<string | null>(this.transferState.get(PORTRAIT_KEY, null));
+  /** Hero portrait, bundled with the site so it is in the very first paint. */
+  readonly portrait = '/assets/portrait-hero.webp';
 
   /** Live h-index from OpenAlex. Falls back to the figure in edition.data.ts. */
   private hIndex = signal<number | null>(this.transferState.get(H_INDEX_KEY, null));
@@ -151,28 +143,7 @@ export class Edition implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.loadPortrait();
     this.loadHIndex();
-  }
-
-  private loadPortrait(): void {
-    if (this.portrait()) return;
-    const done = this.pendingTasks.add();
-    this.contentful.getEntriesByContentType('introductionPage').subscribe({
-      next: (data: any) => {
-        const url: string | undefined = data?.items?.[0]?.fields?.image?.fields?.file?.url;
-        const full = url ? `${url.startsWith('http') ? url : 'https:' + url}?fm=webp&q=85&w=1100` : FALLBACK_PORTRAIT;
-        this.portrait.set(full);
-        this.transferState.set(PORTRAIT_KEY, full);
-        done();
-      },
-      error: () => {
-        // On the server, leave it empty so the browser can try again rather
-        // than hydrating with the bundled photo and swapping it later.
-        if (this.isBrowser) this.portrait.set(FALLBACK_PORTRAIT);
-        done();
-      },
-    });
   }
 
   /** Baked in at build time, then refreshed in the browser so it stays current. */
