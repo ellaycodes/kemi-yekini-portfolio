@@ -388,6 +388,30 @@ export const QUOTES: Quote[] = [
   },
 ];
 
+export interface Award {
+  title: string;
+  detail: string;
+}
+
+/** Shown if the awards from Contentful can't be loaded at build time. */
+export const FALLBACK_AWARDS: Award[] = [
+  { title: 'Best Female Accounting Graduate', detail: 'Society of Women Accountants of Nigeria (SWAN), 1990' },
+];
+
+export interface Talk {
+  when: string;
+  event: string;
+  place: string;
+  role: string;
+}
+
+export const TALKS: Talk[] = [
+  { when: 'March 2023', event: 'UK International Accountants Conference, ICAN UK District', place: 'London', role: 'Speaker' },
+  { when: 'February 2023', event: '8th International Academic Conference on Accounting and Finance, ICAN', place: 'Godfrey Okoye University, Enugu', role: 'Guest speaker' },
+  { when: 'January 2020', event: 'UN ECA Expert Group Meeting, Economic Report on Africa 2020', place: 'Sandton, Johannesburg', role: 'Expert reviewer' },
+  { when: 'August 2019', event: 'Academy of Management Annual Meeting', place: 'Boston', role: 'Presenter, CSR communication and semiotics' },
+];
+
 export const PROFILE_LINKS: LinkItem[] = [
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/profkemiyekini/' },
   { label: 'Aston profile', href: 'https://research.aston.ac.uk/en/persons/cecilia-olukemi-yekini' },

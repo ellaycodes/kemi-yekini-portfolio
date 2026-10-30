@@ -217,10 +217,57 @@
     </div>
   </section>
 
-  <!-- VI · Further reading -->
+  <!-- VI · Honours & talks -->
+  <section class="ed-ruled">
+    <div class="ed-section">
+      <div class="ed-secthead"><span>VI · Honours &amp; talks</span><span>Recognition</span></div>
+      <h2 class="ed-serif ed-h2 ed-rise ed-h2-gap">Honours &amp; talks</h2>
+      <div class="ed-honours">
+        <div class="ed-rise">
+          <p class="ed-label">Awards</p>
+          <ul class="ed-awards">
+            @for (a of awards(); track a.title) {
+              <li>
+                <svg class="ed-laurel" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21c-4-2-7-6-7-11M12 21c4-2 7-6 7-11M6.5 13.5c-1.5-.3-2.6-1.2-3-2.5 1.4-.3 2.6.1 3.3 1M5.4 9.6C4 9 3.2 7.8 3.2 6.5c1.4.2 2.4 1 2.9 2M17.5 13.5c1.5-.3 2.6-1.2 3-2.5-1.4-.3-2.6.1-3.3 1M18.6 9.6c1.4-.6 2.2-1.8 2.2-3.1-1.4.2-2.4 1-2.9 2" /></svg>
+                <span>
+                  <span class="ed-serif ed-award-title">{{ a.title }}</span>
+                  @if (a.detail) {
+                    <span class="ed-award-detail">{{ a.detail }}</span>
+                  }
+                </span>
+              </li>
+            }
+          </ul>
+        </div>
+        <div class="ed-rise">
+          <p class="ed-label">Selected talks</p>
+          <div class="ed-talks">
+            @for (t of talks; track t.event) {
+              <div class="ed-talk">
+                <p class="ed-serif ed-talk-when">{{ t.when }}</p>
+                <div>
+                  <p class="ed-serif ed-talk-event">{{ t.event }}</p>
+                  <p class="ed-talk-meta">{{ t.place }} · {{ t.role }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="ed-speak-band ed-rise">
+        <div>
+          <p class="ed-serif ed-speak-title">Invite Kemi to speak</p>
+          <p class="ed-speak-text">Keynotes, guest lectures, panels and media. Send the details and she'll be in touch.</p>
+        </div>
+        <button type="button" class="ed-reset ed-chip ed-chip-solid ed-speak-btn" (click)="openSpeak()">Send an invitation <svg class="ed-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- VII · Further reading -->
   <section class="ed-cta">
     <div class="ed-section ed-section-cta">
-      <div class="ed-secthead"><span>VI · Further reading</span><span>Opens in a new tab</span></div>
+      <div class="ed-secthead"><span>VII · Further reading</span><span>Opens in a new tab</span></div>
       <h2 class="ed-serif ed-cta-title ed-rise">Read the research</h2>
       <p class="ed-serif ed-cta-deck ed-rise">Every paper, citation and profile, one click away. Each opens in a new tab, so this page stays right where you left it.</p>
       <div class="ed-tiles">
@@ -234,6 +281,13 @@
           </a>
         }
       </div>
+      <button type="button" class="ed-reset ed-tile ed-tile-speak ed-rise" (click)="openSpeak()">
+        <span class="ed-tile-label">Speaking &amp; media</span>
+        <span class="ed-tile-row">
+          <span class="ed-serif ed-tile-title">Invite Kemi to speak</span>
+          <svg class="ed-ico ed-ico-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </span>
+      </button>
       <div class="ed-colophon">
         <span>Professor Kemi C. Yekini · Aston Business School, Birmingham</span>
         <a href="#top">Back to top <svg class="ed-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg></a>
@@ -283,6 +337,56 @@
             </button>
             <span class="ed-sr" aria-live="polite">{{ copied() ? 'Citation copied' : '' }}</span>
           </div>
+        }
+      </div>
+    </div>
+  }
+  @if (speakOpen()) {
+    <div class="ed-overlay">
+      <button type="button" class="ed-reset ed-scrim" aria-label="Close" (click)="close()"></button>
+      <div class="ed-dialog" role="dialog" aria-modal="true" aria-labelledby="ed-speak-title">
+        <button #closeButton type="button" class="ed-reset ed-close" aria-label="Close" (click)="close()">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
+        </button>
+        <p class="ed-modal-eyebrow">Speaking &amp; media</p>
+        <h3 id="ed-speak-title" class="ed-serif ed-modal-title">Invite Kemi to speak</h3>
+        @if (sendState() === 'sent') {
+          <div class="ed-modal-body">
+            <p>Thank you. Your invitation has been sent to Kemi, and she'll reply to the email address you gave.</p>
+          </div>
+          <button type="button" class="ed-reset ed-chip ed-chip-solid" (click)="close()">Close</button>
+        } @else {
+          <form class="ed-form" name="speaking-invitation" method="POST" netlify-honeypot="bot-field" (submit)="sendInvite($event)" novalidate>
+            <input type="hidden" name="form-name" value="speaking-invitation" />
+            <input type="hidden" name="subject" value="New speaking invitation from your website" />
+            <p class="ed-hidden"><label>Leave this empty <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+            <div class="ed-form-grid">
+              <label class="ed-input"><span>Your name *</span><input name="name" type="text" autocomplete="name" required /></label>
+              <label class="ed-input"><span>Organisation</span><input name="organisation" type="text" autocomplete="organization" /></label>
+              <label class="ed-input ed-input-wide"><span>Email *</span><input name="email" type="email" autocomplete="email" required /></label>
+              <label class="ed-input ed-input-wide"><span>Event name</span><input name="event" type="text" /></label>
+              <label class="ed-input"><span>Date</span><input name="date" type="text" placeholder="e.g. 14 March 2027" /></label>
+              <label class="ed-input"><span>Location</span><input name="location" type="text" placeholder="City, or online" /></label>
+              <label class="ed-input"><span>Type of request</span>
+                <select name="type">
+                  <option>Keynote</option><option>Panel</option><option>Guest lecture</option><option>Media</option><option>Other</option>
+                </select>
+              </label>
+              <label class="ed-input"><span>Expected audience</span><input name="audience" type="text" placeholder="e.g. 200 finance professionals" /></label>
+              <label class="ed-input ed-input-wide"><span>Fee or expenses offered</span>
+                <select name="fee">
+                  <option>To be discussed</option><option>Yes, a fee</option><option>Travel expenses only</option><option>No</option>
+                </select>
+              </label>
+              <label class="ed-input ed-input-wide"><span>Message *</span><textarea name="message" rows="5" required></textarea></label>
+            </div>
+            @if (sendState() === 'error') {
+              <p class="ed-form-error" role="alert">That didn't send. Please try again in a moment.</p>
+            }
+            <button type="submit" class="ed-reset ed-chip ed-chip-solid ed-form-send" [disabled]="sendState() === 'sending'">
+              {{ sendState() === 'sending' ? 'Sending…' : 'Send invitation' }}
+            </button>
+          </form>
         }
       </div>
     </div>
