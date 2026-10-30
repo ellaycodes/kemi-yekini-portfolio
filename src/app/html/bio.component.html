@@ -1,14 +1,11 @@
-<div class="bio body" *ngIf="bio$ | async as bio" [style.--bg-color]="backgroundColor">
-    <div class="container">
-        <section class="img">
-            <img [src]="bio.items[0].fields.mainImage.fields.file.url" />
-        </section>
-        <section class="text">
-            <div class="divider"  *ngFor="let each of bio.items[0].fields.bio">
-                <p class="divider_title">{{each.fields.title}}</p>
-                <p class="divider_content">{{each.fields.description.content[0].content[0].value}}
-                </p>
-            </div>
-        </section>
+<section class="bio theme-ink" *ngIf="bio$ | async as bio">
+    <div class="photo">
+        <img [src]="action(bio.items[0].fields.mainImage.fields.file.url)" alt="" loading="lazy" />
     </div>
-</div>
+    <div class="rows">
+        <div class="row" *ngFor="let each of bio.items[0].fields.bio">
+            <h2 class="label">{{each.fields.title}}</h2>
+            <p>{{each.fields.description.content[0].content[0].value}}</p>
+        </div>
+    </div>
+</section>

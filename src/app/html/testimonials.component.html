@@ -1,29 +1,14 @@
-<div class="testimonials body" *ngIf="testimonials$ | async as testimonials" [style.--bg-color]="backgroundColor">
-    <div class="container">
-        <div class="title-container">
-            <h1>{{testimonials.items[0].fields.title}}</h1>
-        </div>
-        <div class="card-wrapper">
-            <section class="card-section">
-                <div class="card" *ngFor="let testimonial of testimonials.items[0].fields.testimonial">
-                    <div class="description">
-                        <div class="person">
-                            <h2>{{testimonial.fields.name}}</h2>
-                            <p class="job-title">{{testimonial.fields.jobTitle}}</p>
-                        </div>
-                        <p class="testimonial">{{testimonial.fields.testimonialContent.content[0].content[0].value}}</p>
-                    </div>
-                </div>
-                <div class="card" *ngFor="let testimonial of testimonials.items[0].fields.testimonial">
-                    <div class="description">
-                        <div class="person">
-                            <h2>{{testimonial.fields.name}}</h2>
-                            <p class="job-title">{{testimonial.fields.jobTitle}}</p>
-                        </div>
-                        <p class="testimonial">{{testimonial.fields.testimonialContent.content[0].content[0].value}}</p>
-                    </div>
-                </div>
-            </section>
+<section class="testimonials theme-stone" *ngIf="testimonials$ | async as testimonials">
+    <div class="wrap">
+        <h2 class="display section-title">{{testimonials.items[0].fields.title}}</h2>
+        <div class="grid">
+            <figure class="quote" *ngFor="let testimonial of testimonials.items[0].fields.testimonial">
+                <figcaption>
+                    <p class="name">{{testimonial.fields.name}}</p>
+                    <p class="role">{{testimonial.fields.jobTitle}}</p>
+                </figcaption>
+                <blockquote>“{{testimonial.fields.testimonialContent.content[0].content[0].value}}”</blockquote>
+            </figure>
         </div>
     </div>
-</div>
+</section>

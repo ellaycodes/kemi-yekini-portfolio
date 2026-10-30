@@ -1,21 +1,16 @@
-<div class="contact body" *ngIf="contact$ | async as contact">
-    <div class="container">
-        <!-- <div class="img">
-        TODO: this to be made into a gallery and moved directly below the accolades.
-            <img src="/assets/contact.jpeg" />
-            <p>Invited as an expert by the United Nations to review the Economic Reports on Africa (17-19 Jan, 2020) Johannesburg, South Africa.</p>
-        </div> -->
-        <div class="info">
-            <h1>{{contact.items[0].fields.thankYouText}}</h1>
+<footer class="contact theme-ink" *ngIf="contact$ | async as contact">
+    <div class="wrap">
+        <img class="banner" src="/assets/group_photo.jpeg"
+            alt="Invited as an expert by the United Nations to review the Economic Report on Africa, Johannesburg, 2020"
+            loading="lazy" />
+        <div class="frame">
+            <h2 class="display thanks">{{contact.items[0].fields.thankYouText}}</h2>
             <div class="details">
-                <p class="title">{{contact.items[0].fields.contactTitle}}</p>
-                <p id="name">{{contact.items[0].fields.name}}</p>
-                <div id="emails" *ngFor="let contactMethod of contact.items[0].fields.contactMethod">
-                    <a [href]="'mailto:' + contactMethod.fields.value">
-                        <p>{{contactMethod.fields.value}}</p>
-                    </a>
-                </div>
+                <p class="label">{{contact.items[0].fields.contactTitle}}</p>
+                <p class="name">{{contact.items[0].fields.name}}</p>
+                <a *ngFor="let contactMethod of contact.items[0].fields.contactMethod"
+                    [href]="'mailto:' + contactMethod.fields.value">{{contactMethod.fields.value}}</a>
             </div>
         </div>
     </div>
-</div>
+</footer>

@@ -1,28 +1,21 @@
-<div class="gallery body" *ngIf="gallery$ | async as gallery" [style.--bg-color]="backgroundColor">
-    <div class="container">
-        <div class="title-container">
-            <h1>{{gallery.items[0].fields.title}}</h1>
-        </div>
-        <button *ngIf="allCardsExpanded" (click)="closeExpandedView()">Close Expanded View</button>
-        <div class="card-wrapper">
-            <div class="prev arrow" (click)="prevImage()" (keydown)="prevImage()" tabindex="0"></div>
-            <section class="card-section">
-                <div class="card"
-                    *ngFor="let imageCard of getVisibleImages(gallery.items[0].fields.contentCard); let i = index"
-                    [ngClass]="{'expanded': allCardsExpanded}" (click)="toggleCard(i)">
-                    <div class="card-container" [ngClass]="{'expanded': allCardsExpanded}">
-                        <div class="img-container" [ngClass]="{'expanded': allCardsExpanded}">
-                            <img [src]="imageCard.fields.image.fields.file.url" alt=""
-                                [ngClass]="{'expanded': allCardsExpanded}">
-                        </div>
-                        <div class="description-container" [ngClass]="{'expanded': allCardsExpanded}">
-                            <p class="description" [innerHTML]="transformMarkdownToHTML(imageCard.fields.imageSummary)">
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            <div class="next arrow" (click)="nextImage()"></div>
+<section class="gallery theme-ink" *ngIf="gallery$ | async as gallery">
+    <div class="wrap">
+        <div class="head">
+            <h2 class="display section-title">{{gallery.items[0].fields.title}}</h2>
+            <div class="controls">
+                <button type="button" (click)="scroll(-1)" aria-label="Previous photo">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4l-8 8 8 8" /></svg>
+                </button>
+                <button type="button" (click)="scroll(1)" aria-label="Next photo">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8" /></svg>
+                </button>
+            </div>
         </div>
     </div>
-</div>
+    <div class="track" #track>
+        <figure class="slide" *ngFor="let imageCard of gallery.items[0].fields.contentCard">
+            <img [src]="action(imageCard.fields.image.fields.file.url)" alt="" loading="lazy" />
+            <figcaption class="caption" [innerHTML]="transformMarkdownToHTML(imageCard.fields.imageSummary)"></figcaption>
+        </figure>
+    </div>
+</section>

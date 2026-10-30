@@ -1,24 +1,16 @@
-<div class="intro body" *ngIf="intro$ | async as intro" [ngStyle]="getDynamicStyles()">
-    <section class="bookmark-container">
-        <button class="bookmark-toggle" (click)="toggleBookmark()" [class.expanded]="isBookmarkExpanded">
-            {{ isBookmarkExpanded ? 'X' : 'Bookmarks' }}
-        </button>
-        <div id="bookmark" *ngIf="bookmark$ | async as bookmark" [class.expanded]="isBookmarkExpanded">
-            <a [href]="one.fields.link" *ngFor="let one of bookmark.items[0].fields.bookmarkEntry">
-                <p>{{one.fields.title}}</p>
-            </a>
+<section id="intro" class="intro theme-paper" *ngIf="intro$ | async as intro">
+    <div class="wrap grid">
+        <div class="text">
+            <h2 class="display heading">{{intro.items[0].fields.title}}</h2>
+            <p class="statement">{{intro.items[0].fields.description.content[0].content[0].value}}</p>
+            <nav class="links" *ngIf="bookmark$ | async as bookmark" aria-label="Profiles">
+                <a class="label" *ngFor="let one of bookmark.items[0].fields.bookmarkEntry" [href]="one.fields.link"
+                    target="_blank" rel="noopener">{{one.fields.title}}</a>
+            </nav>
         </div>
-    </section>
-    <div class="container">
-        <section class="text">
-            <div class="description-container">
-                <h1>{{intro.items[0].fields.title}}</h1>
-                <p class="statement">{{intro.items[0].fields.description.content[0].content[0].value}}</p>
-            </div>
-        </section>
-        <section class="intro_portrait">
-            <img loading="eager" [src]="intro.items[0].fields.image.fields.file.url" />
-            <p>{{intro.items[0].fields.caption}}</p>
-        </section>
+        <figure class="portrait">
+            <img [src]="action(intro.items[0].fields.image.fields.file.url)" [alt]="intro.items[0].fields.caption" loading="lazy" />
+            <figcaption class="caption">{{intro.items[0].fields.caption}}</figcaption>
+        </figure>
     </div>
-</div>
+</section>

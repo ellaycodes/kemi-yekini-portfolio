@@ -1,23 +1,17 @@
-<div class="articles body" *ngIf="articles$ | async as articles" [style.--bg-color]="backgroundColor">
-    <div class="container">
-        <section class='article-container' *ngFor="let article of articles.items">
-            <div id="header">
-                <h1>{{article.fields.title}}</h1>
+<section class="articles theme-stone" *ngIf="articles$ | async as articles">
+    <div class="wrap">
+        <div class="group" *ngFor="let article of articles.items">
+            <h2 class="display section-title">{{article.fields.title}}</h2>
+            <div class="grid">
+                <article class="card" *ngFor="let articleCard of article.fields.articleCards">
+                    <img [src]="action(articleCard.fields.image.fields.file.url)" alt="" loading="lazy" />
+                    <h3>{{articleCard.fields.title}}</h3>
+                    <p class="label source">{{articleCard.fields.publicationName}}</p>
+                    <p class="doi" *ngIf="articleCard.fields.doi">{{articleCard.fields.doi}}</p>
+                    <p class="summary">{{articleCard.fields.description.content[0].content[0].value}}</p>
+                    <a class="btn-outline" [href]="articleCard.fields.articleUrl" target="_blank" rel="noopener">Read more</a>
+                </article>
             </div>
-            <section class="article-cards">
-                <div class="article" *ngFor="let articleCard of article.fields.articleCards">
-                    <img [src]="articleCard.fields.image.fields.file.url" />
-                    <h2 class="title">{{articleCard.fields.title}}</h2>
-                    <div class="source">
-                        <p>{{articleCard.fields.publicationName}}</p>
-                        <p>{{articleCard.fields.doi}}</p>
-                    </div>
-                    <p>{{articleCard.fields.description.content[0].content[0].value}}</p>
-                    <a [href]="articleCard.fields.articleUrl">
-                        <button>Read More</button>
-                    </a>
-                </div>
-            </section>
-        </section>
+        </div>
     </div>
-</div>
+</section>

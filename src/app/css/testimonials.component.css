@@ -1,202 +1,40 @@
 .testimonials {
-  background-color: var(--bg-color);
-  color: black;
-  font-family: "Libre Franklin", sans-serif;
-  height: 100%;
-  padding: 8vh 0;
-  display: flex;
-  justify-content: center;
-  overflow: hidden;
+  padding: var(--section-space) 0;
 }
 
-.container {
-  width: 100%;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(48px, 5vw, 72px) clamp(32px, 6vw, 96px);
+  margin-top: clamp(40px, 5vw, 72px);
 }
 
-h1 {
-  text-transform: capitalize;
-  font-size: 60px;
-  margin: 0 0 10vh 0;
-}
-
-h2 {
+.quote {
   margin: 0;
-  font-size: 18px;
+  border-top: 1px solid var(--rule-dark);
+  padding-top: 24px;
 }
 
-.card-wrapper {
-  position: relative;
-  width: 100%;
+.name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
 }
 
-.card-section {
-  display: flex;
-  flex-wrap: nowrap;
-  column-gap: 3vh;
-  animation: scroll 20s linear infinite;
-  animation-play-state: running;
-  width: calc(100% + 6vh);
+.role {
+  margin: 0;
+  font-size: 17px;
 }
 
-.card-wrapper:hover .card-section {
-  animation-play-state: paused;
-  /* overflow-x: auto; 
-  overflow-y: hidden;
-  scroll-behavior: smooth; */
+blockquote {
+  margin: 20px 0 0;
+  font-size: 16px;
+  line-height: 1.65;
+  color: #dcdcdc;
 }
 
-.card {
-  width: clamp(200px, 35%, 400px);
-  box-sizing: border-box;
-  max-width: 900px;
-  display: flex;
-  column-gap: 1vw;
-  padding: 2vh;
-  background-color: rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  box-shadow: 2px 2px 5px #525252;
-  flex: 0 0 auto;
-}
-
-@keyframes scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-90%);
+@media (max-width: 760px) {
+  .grid {
+    grid-template-columns: 1fr;
   }
 }
-
-img {
-  width: auto;
-  max-width: 200px;
-  height: auto;
-  max-height: 400px;
-  object-fit: cover;
-}
-
-.job-title {
-  margin-top: 0;
-  font-style: italic;
-}
-
-.testimonial {
-  color: #525252;
-  line-height: 22px;
-}
-
-.description {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.title-container {
-  display: flex;
-  justify-content: center;
-}
-
-@media screen and (max-width: 1440px) {
-  /* .container {
-    width: 100%;
-  } */
-  .card {
-    padding: 1vh 2vh;
-  }
-}
-
-@media screen and (max-width: 1024px) {
-  .card-section {
-    width: 70%;
-    row-gap: 5vh;
-  }
-  .card {
-    width: clamp(300px, 60%, 600px);
-    column-gap: 2vw;
-  }
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-  }
-  .title-container {
-    width: 100%;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .testimonials {
-    padding: 5vh 5vw;
-    width: 100%;
-  }
-  .card-section {
-    width: 90%;
-  }
-  .card {
-    justify-content: space-around;
-    width: clamp(300px, 50%, 400px);
-    line-height: 15px;
-  }
-  img {
-    width: 30%;
-  }
-  .description {
-    width: 100%;
-  }
-  h2 {
-    font-size: 14px;
-  }
-  .job-title {
-    font-size: 14px;
-  }
-  .testimonial {
-    font-size: 12px;
-    line-height: 15px;
-  }
-
-  @keyframes scroll {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-300%);
-    }
-  }
-}
-
-@media screen and (max-width: 500px) {
-  img {
-    width: unset;
-  }
-  .description {
-    width: unset;
-  }
-  .card {
-    flex-wrap: wrap;
-    justify-content: start;
-    gap: 2vh;
-    width: clamp(200px, 50%, 400px);
-  }
-  h1 {
-    margin-bottom: 30px;
-  }
-}
-
-@media screen and (max-width: 450px) {
-  h1 {
-    font-size: 50px;
-  }
-  .testimonials {
-    padding: 5vh 0vw;
-  }
-  .container {
-    padding: 0 5vw;
-  }
-}
-
-@media screen and (max-width: 375px) {
-    .body {
-      padding: 5vh 8vw;
-    }
-  }
