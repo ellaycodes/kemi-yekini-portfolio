@@ -1,17 +1,15 @@
-<div class="work body" *ngIf="work$ | async as work" [style.--bg-color]="backgroundColor">
-    <div class="container">
-        <h1>{{work.items[0].fields.title}}</h1>
-        <section class="card-section">
-            <div class="work-experience-card" *ngFor="let workCard of work.items[0].fields.workExperienceCard">
-                <div class="card-header">
-                    <p class="job-duration">{{workCard.fields.dateFrom}}</p>
-                    <h2 class="job-title">{{workCard.fields.jobTitle}}</h2>
+<section class="work theme-ink" *ngIf="work$ | async as work">
+    <div class="wrap">
+        <h2 class="display title">{{work.items[0].fields.title}}</h2>
+        <div class="grid">
+            <article class="job" *ngFor="let workCard of work.items[0].fields.workExperienceCard">
+                <p class="years">{{workCard.fields.dateFrom}}</p>
+                <h3>{{workCard.fields.jobTitle}}</h3>
+                <div class="company">
+                    <img [src]="action(workCard.fields.logo.fields.file.url)" alt="" loading="lazy" />
+                    <p>{{workCard.fields.company}}</p>
                 </div>
-                <div class="company-details">
-                    <img class="company-logo" [src]="action(workCard.fields.logo.fields.file.url)" loading="lazy">
-                    <p class="company-name">{{workCard.fields.company}}</p>
-                </div>
-            </div>
-        </section>
+            </article>
+        </div>
     </div>
-</div>
+</section>

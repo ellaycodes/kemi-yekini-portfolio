@@ -7,8 +7,7 @@ import { BodyComponent } from './body.component'
     imports: [BodyComponent],
     template: `
     <body-component />
-  `,
-    styleUrl: '../../css-dist/app.component.min.css'
+  `
 })
 export class AppComponent {
   title = 'portfolio';

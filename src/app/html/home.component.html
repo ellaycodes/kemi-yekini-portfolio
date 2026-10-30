@@ -1,21 +1,16 @@
-<section id="main" *ngIf="homePage$ | async as homePage" [style.--bg-img]="'url(' + backgroundImage + ')'">
-    <!-- <pre>
-        {{homePage | json}}
-    </pre> -->
-    <div class="container">
-        <div class="heroContent">
-            <div>
-                <p class="jobTitle">{{homePage.items[0].fields.nameOfPosition}}
-                    <strong>{{homePage.items[0].fields.companyName}}</strong>
-                </p>
-                <div>
-                    <h1>{{homePage.items[0].fields.name}}</h1>
-                    <p>{{homePage.items[0].fields.typeOfWebsite}}</p>
-                </div>
-            </div>
-            <div class="arrowsDiv" *ngIf="homePage.items[0].fields.arrows !== false">
-                <div class="arrows">
-                </div>
+<section class="hero" *ngIf="homePage$ | async as homePage" [style.--bg-img]="'url(' + backgroundImage + ')'">
+    <div class="wrap hero-inner">
+        <div class="frame">
+            <p class="label eyebrow">{{homePage.items[0].fields.companyName}}</p>
+            <h1 class="display name">{{homePage.items[0].fields.name}}</h1>
+            <p class="role">{{homePage.items[0].fields.nameOfPosition}}</p>
+            <div class="frame-foot">
+                <p class="label">{{homePage.items[0].fields.typeOfWebsite}}</p>
+                <a class="down" href="#intro" aria-label="Scroll to introduction" *ngIf="homePage.items[0].fields.arrows !== false">
+                    <svg viewBox="0 0 48 64" aria-hidden="true">
+                        <path d="M24 2v58M4 40l20 20 20-20" fill="none" stroke="currentColor" stroke-width="2.5" />
+                    </svg>
+                </a>
             </div>
         </div>
     </div>

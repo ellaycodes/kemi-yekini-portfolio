@@ -1,126 +1,83 @@
 .accolades {
-  background-color: var(--bg-color);
-  font-family: "Libre Franklin", sans-serif;
-  height: 100%;
-  padding-top: 5vh;
-  padding-bottom: 8vh;
+  padding: var(--section-space) 0;
+}
+
+.grid {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
+  gap: clamp(48px, 5vw, 72px) clamp(24px, 3vw, 48px);
+  margin-top: clamp(56px, 7vw, 110px);
 }
 
-.container {
-    width: 1340px;
+.award {
+  width: calc((100% - 3 * clamp(24px, 3vw, 48px)) / 4);
+  text-align: center;
 }
 
-h1 {
-    font-size: 70px;
-    margin-bottom: 5vh;
-    letter-spacing: -5px;
-}
-
-.accolade-title {
-  height: 10vh;
+.laurel {
   display: flex;
   align-items: center;
+  justify-content: center;
+  height: 132px;
 }
 
-img {
-  height: 100%;
-  width: 25%;
+/* The wreath art sits in the middle third of a square PNG; crop to it. */
+.laurel img {
+  flex: 0 0 auto;
+  width: 50px;
+  height: 132px;
   object-fit: cover;
 }
 
-h2 {
-  font-size: clamp(11px, 80%, 16px);
-  text-align: center;
+h3 {
+  flex: 1 1 auto;
+  max-width: 170px;
+  margin: 0 -4px;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
-.whole-accolade {
-  width: 22%;
-}
-
 p {
-    font-size: clamp(10px, 80%, 16px);
-    text-align: center;
-    color: #606060;
+  margin: 20px auto 0;
+  max-width: 34ch;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted-dark);
 }
 
-section {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    row-gap: 5vh;
-    column-gap: 2vw;
+@media (max-width: 1100px) {
+  .award {
+    width: calc((100% - 2 * clamp(24px, 3vw, 48px)) / 3);
+  }
 }
 
-@media screen and (max-width: 1440px) {
-    section {
-        column-gap: 2vw;
-    }
-    img {
-        height: 80%
-    }
-    h2 {
-        font-size: clamp(11px, 70%, 16px);;
-    }
+@media (max-width: 760px) {
+  .award {
+    width: calc((100% - clamp(24px, 3vw, 48px)) / 2);
+  }
 }
 
-@media screen and (max-width: 1024px) {
-    img {
-        height: 100%;
-    }
-    section {
-        justify-content: space-around;
-    }
-    .whole-accolade {
-        width: 30%;
-    }
-}
-
-@media screen and (max-width: 768px) {
-     .accolades {
-        width: 100%;
-        padding: 0 5vw;
-     }
-}
-
-@media screen and (max-width: 650px) {
-    .whole-accolade {
-        width: 40%;
-    }
-    .container {
-        padding-bottom: 5vh;
-    }
-}
-
-@media screen and (max-width: 500px) {
-    .whole-accolade {
-        width: 50%;
-    }
-    h1 {
-        font-size: 60px;
-    }
-}
-
-@media screen and (max-width: 450px) {
-    .whole-accolade {
-        width: 70%;
-    }
-    .accolades {
-        padding: 0;
-    }
-    .container {
-        padding: 0vh 5vw 5vh;
-    }
-}
-
-@media screen and (max-width: 375px) {
-    .accolades {
-        padding: 0 8vw;
-    }
-    .container {
-        width: 100%;
-    }
-
+@media (max-width: 480px) {
+  .award {
+    width: 100%;
+  }
+  .grid {
+    gap: 44px;
+  }
+  .laurel {
+    max-width: 300px;
+    height: 112px;
+    margin: 0 auto;
+  }
+  .laurel img {
+    width: 44px;
+    height: 112px;
+  }
+  p {
+    margin-top: 12px;
+  }
 }

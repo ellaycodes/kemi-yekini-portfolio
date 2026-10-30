@@ -4,7 +4,7 @@
     {
       "name": "portfolio",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["ng", "serve", "--port", "4200"],
+      "runtimeArgs": ["ng", "serve", "--port", "4200", "--no-hmr"],
       "port": 4200
     }
   ]

@@ -36,8 +36,7 @@ import { Gallery } from './gallery.component';
     <articles class="section" [action]="transformImage"/>
     <testimonials class="section" />
     <contact class="section" />
-  `,
-  styleUrl: '../../css-dist/app.component.min.css',
+  `
 })
 export class BodyComponent {
 

@@ -1,121 +1,61 @@
 .edu {
-    background-color: var(--bg-color);
-    font-family: "Libre Franklin", sans-serif;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    height: 100%;
-    padding-bottom: 3vh;
+  padding: var(--section-space) 0;
 }
 
-.container {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    width: 1440px;
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: clamp(40px, 8vw, 160px);
+  align-items: start;
 }
 
-h1 {
-    text-transform: capitalize;
-    font-size: clamp(50px, 400%, 85px);
-    margin: 0 0 10px 0;
-    letter-spacing: -3px;
+.summary {
+  margin: clamp(28px, 3vw, 44px) 0 0;
+  max-width: 34ch;
+  font-size: clamp(18px, 1.6vw, 24px);
+  line-height: 1.5;
+  color: var(--muted-dark);
 }
 
-.text {
-    width: 40%;
+.item {
+  padding: 28px 0 32px;
+  color: var(--muted-dark);
 }
 
-.card {
-    width: 60%;
+.item + .item {
+  border-top: 1px solid var(--rule-light);
 }
 
-.description {
-    font-size: clamp(15px, 130%, 30px);
-    font-weight: 100;
-    line-height: 1.4;
-    width: 80%;
-    color: #606060;
+.item:first-child {
+  padding-top: 12px;
 }
 
-.qualification {
-    border-top: 1px solid #000;
+h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
 }
 
-.qualification_institution {
-    color: #606060;
-    letter-spacing: 0px;
-    font-size: 14px;
+p,
+ul {
+  margin: 2px 0 0;
+  font-size: 16px;
 }
 
-.qualification_title {
-    margin-bottom: 0;
-    font-size: 18px;
+.institution {
+  margin-bottom: 4px;
 }
 
-.qualification_description {
-    color: #606060;
-    letter-spacing: 0px;
-    font-size: 16px;
-    margin-top: 3vh;
+ul {
+  padding-left: 1.1em;
 }
 
-@media screen and (max-width: 1440px) {
-    .edu {
-        padding: 10vh 8vw;
-    }
-}
-
-@media screen and (max-width: 1300px) {
-    .text {
-        width: 100%;
-        margin-bottom: 5vh;
-    }
-    .description {
-        width: 100%;
-    }
-    .card {
-        width: 100%;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .edu {
-        padding: 10vh 5vw;
-        width: 100%;
-    }
-    .container {
-        padding: 0vh 5vw;
-    }
-    .card {
-        width: 100%;
-    }
-    .qualification_title {
-        font-size: clamp(10px, 140%, 30px);
-    }
-}
-
-@media screen and (max-width: 500px) {
-    .edu {
-        margin: 0;
-    }
-}
-
-@media screen and (max-width: 450px) {
-    .edu {
-        padding: 0;
-    }
-    .container {
-        padding: 5vh;
-    }
-}
-
-@media screen and (max-width: 375px) {
-    .body {
-      padding: 0 8vw;
-    }
-    .container {
-        padding-left: 0;
-        padding-right: 0;
-    }
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
   }
+  .summary {
+    max-width: none;
+  }
+}

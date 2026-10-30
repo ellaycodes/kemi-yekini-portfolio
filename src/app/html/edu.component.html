@@ -1,26 +1,20 @@
-<div class="edu body" *ngIf="edu$ | async as edu" [style.--bg-color]="backgroundColor">
-    <div class="container">
-        <section class="text">
-            <h1>{{edu.items[0].fields.title}}</h1>
-            <p class="description">{{edu.items[0].fields.educationExperienceSummary.content[0].content[0].value}}</p>
-        </section>
-        <section class="card">
-            <div class="qualification" *ngFor="let educationField of edu.items[0].fields.educationField">
-                <h2 class="qualification_title">{{educationField.fields.title}}</h2>
-                <p class="qualification_institution">{{educationField.fields.institution}}</p>
-                <div class="qualification_description">
-                    <ng-container *ngFor="let content of educationField.fields.achievements.content">
-                        <p *ngIf="content.nodeType === 'paragraph'">
-                            {{ content.content[0].value }}
-                        </p>
-                        <ul *ngIf="content.nodeType === 'unordered-list'">
-                            <li *ngFor="let listItem of content.content">
-                                {{ listItem.content[0].content[0].value }}
-                            </li>
-                        </ul>
-                    </ng-container>
-                </div>
-            </div>
-        </section>
+<section class="edu theme-paper" *ngIf="edu$ | async as edu">
+    <div class="wrap grid">
+        <div class="text">
+            <h2 class="display section-title">{{edu.items[0].fields.title}}</h2>
+            <p class="summary">{{edu.items[0].fields.educationExperienceSummary.content[0].content[0].value}}</p>
+        </div>
+        <div class="list">
+            <article class="item" *ngFor="let educationField of edu.items[0].fields.educationField">
+                <h3>{{educationField.fields.title}}</h3>
+                <p class="institution">{{educationField.fields.institution}}</p>
+                <ng-container *ngFor="let content of educationField.fields.achievements.content">
+                    <p *ngIf="content.nodeType === 'paragraph'">{{ content.content[0].value }}</p>
+                    <ul *ngIf="content.nodeType === 'unordered-list'">
+                        <li *ngFor="let listItem of content.content">{{ listItem.content[0].content[0].value }}</li>
+                    </ul>
+                </ng-container>
+            </article>
+        </div>
     </div>
-</div>
+</section>

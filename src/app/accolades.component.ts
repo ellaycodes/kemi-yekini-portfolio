@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
     standalone: true,
     imports: [CommonModule],
     templateUrl: './html/accolades.component.html',
-    styleUrls: ['../../css-dist/app.component.min.css', '../../css-dist/accolades.component.min.css']
+    styleUrl: './css/accolades.component.css'
 })
 export class Accolades implements OnInit {
   constructor(private contentfulService: ContentfulService) {}
@@ -16,15 +16,8 @@ export class Accolades implements OnInit {
   @Input() action!: (imageUrl: string, format?: string) => string;
 
   accolades$: Observable<any> | undefined;
-  backgroundColor: string = '';
 
   ngOnInit(): void {
-    const contentTypeId = 'accoladesPage';
-    this.accolades$ =
-      this.contentfulService.getEntriesByContentType(contentTypeId);
-
-      this.accolades$.subscribe((data: any) => {
-        this.backgroundColor = data.items[0].fields.stylingOptions.fields.backgroundColor || ''
-      })
+    this.accolades$ = this.contentfulService.getEntriesByContentType('accoladesPage');
   }
 }

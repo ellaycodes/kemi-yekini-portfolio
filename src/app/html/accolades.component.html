@@ -1,15 +1,15 @@
-<div class="accolades body" *ngIf="accolades$ | async as accolades" [style.--bg-color]="backgroundColor">
-    <div class="container">
-        <h1>{{accolades.items[0].fields.title}}</h1>
-        <section>
-            <div class="whole-accolade" *ngFor="let accolade of accolades.items[0].fields.accolades">
-                <div class="accolade-title">
-                    <img src="/assets/leftWreath.png" loading="lazy"/>
-                    <h2>{{accolade.fields.title}}</h2>
-                    <img src="/assets/rightWreath.png" loading="lazy"/>
+<section class="accolades theme-paper" *ngIf="accolades$ | async as accolades">
+    <div class="wrap">
+        <h2 class="display section-title">{{accolades.items[0].fields.title}}</h2>
+        <div class="grid">
+            <article class="award" *ngFor="let accolade of accolades.items[0].fields.accolades">
+                <div class="laurel">
+                    <img src="/assets/leftWreath.png" alt="" loading="lazy" />
+                    <h3>{{accolade.fields.title}}</h3>
+                    <img src="/assets/rightWreath.png" alt="" loading="lazy" />
                 </div>
                 <p>{{accolade.fields.description.content[0].content[0].value}}</p>
-            </div>
-        </section>
+            </article>
+        </div>
     </div>
-</div>
+</section>

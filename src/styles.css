@@ -1,1 +1,140 @@
-/* You can add global styles to this file, and also import other style files */
+/* Shared design tokens and building blocks used by every section. */
+
+:root {
+  --ink: #2b2b2b;
+  --paper: #eceeef;
+  --stone: #5f5f5f;
+  --white: #f4f5f6;
+  --muted-dark: #606060;
+  --muted-light: #c4c4c4;
+  --rule-dark: rgba(255, 255, 255, 0.55);
+  --rule-light: rgba(0, 0, 0, 0.55);
+
+  --font: "Libre Franklin", "Helvetica Neue", Arial, sans-serif;
+  --gutter: clamp(20px, 6.5vw, 120px);
+  --max-width: 1440px;
+  --section-space: clamp(64px, 10vw, 140px);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 17px;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* Section hosts (<intro>, <bio>, ...) render inline by default. */
+.section {
+  display: block;
+}
+
+/* Centred content column with consistent side gutters. */
+.wrap {
+  width: 100%;
+  max-width: calc(var(--max-width) + 2 * var(--gutter));
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+/* Section colour themes */
+.theme-ink {
+  background: var(--ink);
+  color: var(--white);
+}
+
+.theme-paper {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.theme-stone {
+  background: var(--stone);
+  color: var(--white);
+}
+
+/* Big, tightly tracked display headings */
+.display {
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  margin: 0;
+}
+
+.section-title {
+  font-size: clamp(44px, 6.4vw, 92px);
+}
+
+/* Small uppercase, letter-spaced labels */
+.label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.caption {
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 12px 0 0;
+}
+
+/* Captions may be Markdown rendered via innerHTML; keep headings at caption size. */
+.caption :is(h1, h2, h3, h4, p) {
+  font: inherit;
+  letter-spacing: inherit;
+  margin: 0;
+}
+
+/* Outlined "Read more" style button */
+.btn-outline {
+  display: inline-block;
+  min-width: 170px;
+  padding: 12px 28px;
+  border: 1.5px solid currentColor;
+  color: inherit;
+  font-size: 16px;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: background-color 0.25s, color 0.25s;
+}
+
+.btn-outline:hover,
+.btn-outline:focus-visible {
+  background: var(--white);
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
