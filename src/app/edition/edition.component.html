@@ -1,0 +1,246 @@
+<div id="top" class="ed">
+
+  <!-- Cover: pinned hero, then the statement rises over it -->
+  <div class="ed-stage">
+    <header class="ed-pin">
+      <div class="ed-masthead">
+        <div class="ed-masthead-bar">
+          <span>Aston Business School</span>
+          <span class="ed-serif ed-masthead-title">A portfolio of research &amp; practice</span>
+          <span>Birmingham · 2026</span>
+        </div>
+      </div>
+
+      <div class="ed-herogrid">
+        <div class="ed-herocopy">
+          <p class="ed-kicker">Professor of Accounting</p>
+          <h1 class="ed-serif ed-name">Professor Kemi&nbsp;C.&nbsp;Yekini</h1>
+          <p class="ed-serif ed-standfirst">Chartered Accountant, Certified Fraud Examiner, and researcher into the transparency of corporate reporting.</p>
+
+          <div class="ed-herostats">
+            @for (s of heroStats(); track s.label) {
+              <div>
+                <p class="ed-serif ed-herostat-value">{{ s.value }}</p>
+                <p class="ed-herostat-label">{{ s.label }}</p>
+              </div>
+            }
+          </div>
+
+          <a class="ed-cue" href="#about" aria-label="Scroll to About">
+            <svg viewBox="0 0 48 64" width="32" aria-hidden="true">
+              <path class="ed-trail" d="M24 2v56" fill="none" stroke="currentColor" stroke-width="2.5" />
+              <path d="M4 40l20 20 20-20" fill="none" stroke="currentColor" stroke-width="2.5" />
+            </svg>
+            <span>Read on</span>
+          </a>
+        </div>
+
+        <figure class="ed-figure">
+          <div class="ed-figwrap">
+            <div class="ed-orbit" aria-hidden="true">
+              <svg viewBox="0 0 600 600">
+                <defs>
+                  <path id="ed-ring" d="M300,300 m-262,0 a262,262 0 1,1 524,0 a262,262 0 1,1 -524,0" />
+                </defs>
+                <circle cx="300" cy="300" r="232" fill="none" stroke="currentColor" stroke-opacity="0.25" stroke-width="1" />
+                <text class="ed-ring-text">
+                  <textPath href="#ed-ring" textLength="1640" lengthAdjust="spacing">{{ roles }}</textPath>
+                </text>
+              </svg>
+            </div>
+            <div class="ed-arch">
+              <img [src]="portrait()" alt="Portrait of Professor Kemi C. Yekini" fetchpriority="high" />
+            </div>
+          </div>
+        </figure>
+      </div>
+    </header>
+
+    <section class="ed-statement">
+      <div class="ed-statement-inner">
+        <p class="ed-serif ed-statement-big">Over three decades in accounting.</p>
+        <p class="ed-serif ed-statement-small">From KPMG to Professor of Accounting at Aston Business School.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- I · About -->
+  <section id="about" class="ed-section">
+    <div class="ed-secthead"><span>I · About</span><span>Profile</span></div>
+    <div class="ed-split">
+      <div class="ed-rise">
+        <h2 class="ed-serif ed-h2">A practitioner turned professor</h2>
+        <p class="ed-serif ed-deck">From KPMG and Deloitte to leading research centres in the UK.</p>
+      </div>
+      <div class="ed-twocol ed-rise">
+        <p class="ed-dropcap">Kemi is a Chartered Accountant who began her career at KPMG and Deloitte in Nigeria and held senior management roles in industry before moving into academia in 2007.</p>
+        <p>Her research examines how transparent and readable corporate reporting is, from sustainability and CSR disclosures to financial narratives, governance and fraud.</p>
+        <p>She introduced a semiotics-based method for studying CSR communication, and has worked with sustainability consultancy Radley Yeldar assessing the language of client reports.</p>
+      </div>
+    </div>
+    <div class="ed-stats">
+      @for (s of aboutStats; track s.label) {
+        <div class="ed-pop ed-stat">
+          <p class="ed-serif ed-stat-value">{{ s.value }}</p>
+          <p class="ed-stat-label">{{ s.label }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- II · Path -->
+  <section class="ed-section ed-section-tight">
+    <div class="ed-secthead"><span>II · Path</span><span>Career</span></div>
+    <h2 class="ed-serif ed-h2 ed-rise ed-h2-gap">Three decades, in order</h2>
+    <div class="ed-path">
+      @for (p of path; track p.title) {
+        <div class="ed-pathrow ed-slide">
+          <p class="ed-serif ed-path-year">{{ p.year }}</p>
+          <p class="ed-serif ed-path-title">{{ p.title }}</p>
+          <p class="ed-path-detail">{{ p.detail }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- III · Publications -->
+  <section class="ed-band-paper">
+    <div class="ed-section">
+      <div class="ed-secthead"><span>III · Publications</span><span>Selected from 37 outputs</span></div>
+      <h2 class="ed-serif ed-h2 ed-rise ed-h2-gap">Selected work</h2>
+      <p class="ed-hint ed-rise">Select any paper to read a short summary.</p>
+      <div class="ed-covers">
+        @for (pub of pubs; track pub.title; let i = $index) {
+          <button type="button" class="ed-cover" [class.ed-feature]="pub.feature" [style.background]="pub.bg" (click)="openPub(i)">
+            <span class="ed-cover-venue">{{ pub.venue }}</span>
+            <span class="ed-serif ed-cover-title">{{ pub.title }}</span>
+            <span class="ed-cover-foot">
+              <span>{{ pub.kind }} · {{ pub.year }}</span>
+              <span class="ed-accent ed-strong">Read summary +</span>
+            </span>
+          </button>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- IV · Research & service -->
+  <section class="ed-section">
+    <div class="ed-secthead"><span>IV · Research &amp; service</span><span>Expertise</span></div>
+    <h2 class="ed-serif ed-h2 ed-rise ed-h2-gap">Research &amp; service</h2>
+    <div class="ed-cols3">
+      @for (c of columns; track c.heading) {
+        <div class="ed-rise">
+          <p class="ed-label">{{ c.heading }}</p>
+          <ul class="ed-list">
+            @for (item of c.items; track item) {
+              <li class="ed-serif">{{ item }}</li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+    <div class="ed-bands">
+      @for (b of bands; track b.label) {
+        <div class="ed-bandrow ed-slide">
+          <p class="ed-label">{{ b.label }}</p>
+          <p class="ed-bandtext">{{ b.text }}</p>
+          @if (b.href) {
+            <a class="ed-chip" [href]="b.href" target="_blank" rel="noopener">{{ b.linkText }} ↗</a>
+          }
+        </div>
+      }
+    </div>
+    <div class="ed-find ed-rise">
+      <p class="ed-label">Find Kemi</p>
+      <nav class="ed-chips" aria-label="Find Kemi online">
+        @for (l of links; track l.label) {
+          <a class="ed-chip" [href]="l.href" target="_blank" rel="noopener">{{ l.label }} ↗</a>
+        }
+      </nav>
+    </div>
+  </section>
+
+  <!-- V · In the field -->
+  <section class="ed-ruled">
+    <div class="ed-section">
+      <div class="ed-secthead"><span>V · In the field</span><span>Talks &amp; travel</span></div>
+      <h2 class="ed-serif ed-h2 ed-rise ed-h2-gap">In the field</h2>
+      <p class="ed-hint ed-rise">Select a photo to read the story behind it.</p>
+      <div class="ed-field">
+        <button type="button" class="ed-reset ed-lead" (click)="openStory(0)">
+          <span class="ed-zoom">
+            <img [src]="lead.img" [alt]="lead.title" [style.object-position]="lead.imgPosition" loading="lazy" />
+          </span>
+          <span class="ed-lead-foot">
+            <span class="ed-muted">{{ lead.title }}</span>
+            <span class="ed-strong">Read the story +</span>
+          </span>
+        </button>
+        <div>
+          @for (m of moments; track m.img) {
+            <button type="button" class="ed-reset ed-moment ed-slide" (click)="openStory(m.story)">
+              <img [src]="m.img" alt="" loading="lazy" />
+              <span>
+                <span class="ed-serif ed-moment-title">{{ m.title }}</span>
+                <span class="ed-moment-place">{{ m.place }}</span>
+                <span class="ed-moment-cta">Read the story +</span>
+              </span>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VI · Further reading -->
+  <section class="ed-cta">
+    <div class="ed-section ed-section-cta">
+      <div class="ed-secthead"><span>VI · Further reading</span><span>Opens in a new tab</span></div>
+      <h2 class="ed-serif ed-cta-title ed-rise">Read the research</h2>
+      <p class="ed-serif ed-cta-deck ed-rise">Every paper, citation and profile, one click away. Each opens in a new tab, so this page stays right where you left it.</p>
+      <div class="ed-tiles">
+        @for (t of tiles; track t.label) {
+          <a class="ed-tile ed-rise" [class.ed-big]="t.big" [href]="t.href" target="_blank" rel="noopener">
+            <span class="ed-tile-label">{{ t.label }}</span>
+            <span class="ed-tile-row">
+              <span class="ed-serif ed-tile-title">{{ t.title }}</span>
+              <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
+            </span>
+          </a>
+        }
+      </div>
+      <div class="ed-colophon">
+        <span>Professor Kemi C. Yekini · Aston Business School, Birmingham</span>
+        <a href="#top">Back to top ↑</a>
+      </div>
+    </div>
+  </section>
+
+  @if (modal(); as m) {
+    <div class="ed-overlay">
+      <button type="button" class="ed-reset ed-scrim" aria-label="Close" (click)="close()"></button>
+      <div class="ed-dialog" role="dialog" aria-modal="true" aria-labelledby="ed-modal-title">
+        <button #closeButton type="button" class="ed-reset ed-close" aria-label="Close" (click)="close()">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
+        </button>
+        <p class="ed-modal-eyebrow">{{ m.eyebrow }}</p>
+        <h3 id="ed-modal-title" class="ed-serif ed-modal-title">{{ m.title }}</h3>
+        @if (m.meta) {
+          <p class="ed-serif ed-modal-meta">{{ m.meta }}</p>
+        }
+        @if (m.img) {
+          <img class="ed-modal-img" [src]="m.img" alt="" [style.object-position]="m.imgPosition" />
+        }
+        <div class="ed-modal-body">
+          @for (para of m.body; track $index) {
+            <p>{{ para }}</p>
+          }
+        </div>
+        @if (m.href) {
+          <a class="ed-chip ed-chip-solid" [href]="m.href" target="_blank" rel="noopener">{{ m.linkText }} ↗</a>
+        }
+      </div>
+    </div>
+  }
+</div>
